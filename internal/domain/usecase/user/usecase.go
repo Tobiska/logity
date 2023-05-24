@@ -69,7 +69,7 @@ func (us User) UpdateAccessToken(ctx context.Context, refreshToken string) (stri
 }
 
 func (us User) SignUp(ctx context.Context, d dto.SignUpInputDto) (*user.User, error) {
-	h, err := us.hashGenerator.Hash(d.Password)
+	h, err := us.hashGenerator.Hash(ctx, d.Password)
 	if err != nil {
 		return nil, fmt.Errorf("error hash from password %w", err)
 	}
