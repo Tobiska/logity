@@ -12,7 +12,7 @@
                 <constraints unique="true" nullable="false"/>
             </column>
 
-            <column name="fio" type="VARCHAR(100)">
+            <column defaultValueComputed="now()" name="expired_at" type="TIMESTAMP WITHOUT TIME ZONE">
                 <constraints nullable="false"/>
             </column>
 

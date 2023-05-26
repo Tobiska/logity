@@ -16,7 +16,7 @@
                 <constraints nullable="false"/>
             </column>
 
-            <column name="expired_at" type="TIMESTAMP WITHOUT TIME ZONE">
+            <column name="password_hash" type="VARCHAR(70)">
                 <constraints nullable="false"/>
             </column>
 

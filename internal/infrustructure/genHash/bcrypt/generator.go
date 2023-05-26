@@ -2,8 +2,10 @@ package bcrypt
 
 import (
 	"context"
+	"errors"
 	"golang.org/x/crypto/bcrypt"
 	"logity/config"
+	"logity/internal/domain/usecase/auth"
 )
 
 type Generator struct {
@@ -22,4 +24,12 @@ func (g Generator) Hash(_ context.Context, password string) (string, error) {
 		return "", err
 	}
 	return string(hash), nil
+}
+
+func (g Generator) Check(_ context.Context, raw, hash string) error {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(raw))
+	if errors.Is(err, bcrypt.ErrMismatchedHashAndPassword) {
+		return auth.ErrMismatch
+	}
+	return nil
 }

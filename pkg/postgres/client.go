@@ -8,6 +8,10 @@ import (
 	"time"
 )
 
+const (
+	Dialect = `postgres`
+)
+
 func New(cfg *config.Database) (*pgxpool.Pool, error) {
 	pgxCfg, err := pgxpool.ParseConfig(cfg.Dsn)
 	if err != nil {

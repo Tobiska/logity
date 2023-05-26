@@ -9,8 +9,8 @@ type (
 	}
 
 	SignInOutputDto struct {
-		AccessToken  string
-		RefreshToken string
+		AccessToken  JWT `json:"access_token"`
+		RefreshToken JWT `json:"refresh_token"`
 	}
 
 	SignUpInputDto struct {

@@ -2,7 +2,6 @@ package user
 
 import (
 	"fmt"
-	"github.com/google/uuid"
 	"regexp"
 )
 
@@ -28,11 +27,12 @@ func NewPhone(s string) (Phone, error) {
 }
 
 type User struct {
-	UserId   *uuid.UUID
-	Username string
-	Email    Email
-	Phone    Phone
-	Fio      string
+	Id           string
+	Username     string
+	Email        Email
+	Phone        Phone
+	Fio          string
+	PasswordHash string
 }
 
 func NewUser(username, email, phone, fio string) (*User, error) {

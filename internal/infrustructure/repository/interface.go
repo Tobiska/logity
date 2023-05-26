@@ -14,4 +14,8 @@ type (
 		Begin(ctx context.Context) (pgx.Tx, error)
 		Close()
 	}
+	HashGenerator interface {
+		Hash(ctx context.Context, raw string) (string, error)
+		Check(ctx context.Context, raw, hash string) error
+	}
 )

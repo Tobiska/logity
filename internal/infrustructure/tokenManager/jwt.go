@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
 	"logity/config"
-	"logity/internal/domain/usecase/user/dto"
+	"logity/internal/domain/usecase/auth/dto"
 	"time"
 )
 
@@ -28,30 +28,38 @@ func NewTokenManager(cfg *config.Config) *TokenManager {
 	}
 }
 
-func (m *TokenManager) NewJWT(userId string) (string, error) {
+func (m *TokenManager) NewJWT(userId string) (jwtToken dto.JWT, err error) {
+	expiredAt := time.Now().Add(m.ttlAccess)
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodEdDSA, jwt.MapClaims{
 		"sub": userId,
-		"exp": time.Now().Add(m.ttlAccess).Unix(),
+		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
 	})
 	signedToken, err := unsignedToken.SignedString(m.secretAccessKey)
 	if err != nil {
-		return "", err
+		return jwtToken, err
 	}
-	return signedToken, nil
+	return dto.JWT{
+		Token:     signedToken,
+		ExpiredAt: expiredAt,
+	}, nil
 }
 
-func (m *TokenManager) NewRefreshToken(userId string) (string, error) {
+func (m *TokenManager) NewRefreshToken(userId string) (jwtToken dto.JWT, err error) {
+	expiredAt := time.Now().Add(m.ttlRefresh)
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodEdDSA, jwt.MapClaims{
 		"sub": userId,
-		"exp": time.Now().Add(m.ttlRefresh).Unix(),
+		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
 	})
 	signedToken, err := unsignedToken.SignedString(m.secretRefreshKey)
 	if err != nil {
-		return "", err
+		return jwtToken, err
 	}
-	return signedToken, nil
+	return dto.JWT{
+		Token:     signedToken,
+		ExpiredAt: expiredAt,
+	}, nil
 }
 
 func (m *TokenManager) ParseToken(token string) (*dto.PayloadToken, error) {
