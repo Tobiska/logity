@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/doug-martin/goqu/v9"
+	_ "github.com/doug-martin/goqu/v9/dialect/postgres"
 	"github.com/jackc/pgx/v5"
 	"logity/internal/domain/entity/user"
 	"logity/internal/domain/usecase/auth"
@@ -24,9 +25,10 @@ type Repository struct {
 	hashGenerator repository.HashGenerator
 }
 
-func NewUserRepository(client repository.Client) *Repository {
+func NewUserRepository(client repository.Client, hashGenerator repository.HashGenerator) *Repository {
 	return &Repository{
-		client: client,
+		client:        client,
+		hashGenerator: hashGenerator,
 	}
 }
 
@@ -34,8 +36,7 @@ func (r *Repository) CheckCredentials(ctx context.Context, dto dto.SignInInputDt
 	//todo with pgcrypt check bcrypt hash in psql
 	query, args, err := goqu.Dialect(postgres.Dialect).From(UsersTable).Prepared(true).Select(
 		goqu.C(`id`), goqu.C(`email`), goqu.C(`phone`), goqu.C(`fio`), goqu.C(`password_hash`)).Where(
-		goqu.ExOr{"phone": dto.Login},
-		goqu.ExOr{"email": dto.Login},
+		goqu.ExOr{"phone": dto.Login, "email": dto.Login},
 	).ToSQL()
 	if err != nil {
 		return nil, fmt.Errorf("check credentials constuct query error: %w", err)
@@ -57,16 +58,32 @@ func (r *Repository) CheckCredentials(ctx context.Context, dto dto.SignInInputDt
 	return u, nil
 }
 
-func (r *Repository) CreateUser(ctx context.Context, u user.User) (*user.User, error) {
-	passwordHash, err := r.hashGenerator.Hash(ctx, u.PasswordHash)
+func (r *Repository) FindUser(ctx context.Context, userId string) (*user.User, error) {
+	query, args, err := goqu.Dialect(postgres.Dialect).From(goqu.T(UsersTable)).Prepared(true).
+		Select(goqu.C("id"), goqu.C("email"), goqu.C("phone"), goqu.C("fio")).
+		Where(goqu.Ex{"id": goqu.V(userId)}).ToSQL()
+	if err != nil {
+		return nil, fmt.Errorf("error contruct find user query: %w", err)
+	}
+
+	u := &user.User{}
+	if err := r.client.QueryRow(ctx, query, args...).Scan(&u.Id, &u.Email, &u.Phone, &u.Fio); err != nil {
+		return nil, fmt.Errorf("error exec find user query: %w", err)
+	}
+
+	return u, nil
+}
+
+func (r *Repository) CreateUser(ctx context.Context, d dto.SignUpInputDto) (*user.User, error) {
+	passwordHash, err := r.hashGenerator.Hash(ctx, d.Password)
 	if err != nil {
 		return nil, fmt.Errorf("password hash error: %w", err)
 	}
-	query, args, err := goqu.Dialect(postgres.Dialect).From(UsersTable).Prepared(true).
+	query, args, err := goqu.Dialect(postgres.Dialect).From(goqu.T(UsersTable)).Prepared(true).
 		Insert().Rows(goqu.Record{
-		"email":         goqu.V(u.Email),
-		"phone":         goqu.V(u.Phone),
-		"fio":           goqu.V(u.Fio),
+		"email":         goqu.V(d.Email),
+		"phone":         goqu.V(d.Phone),
+		"fio":           goqu.V(d.Fio),
 		"password_hash": goqu.V(passwordHash),
 	}).Returning(goqu.C("id")).
 		ToSQL()
@@ -79,9 +96,14 @@ func (r *Repository) CreateUser(ctx context.Context, u user.User) (*user.User, e
 		return nil, fmt.Errorf("exec error create auth error: %w", err)
 	}
 
+	u, err := user.NewUser(d.Email, d.Phone, d.Fio)
+	if err != nil {
+		return nil, fmt.Errorf("error create domain object user: %w", err)
+	}
+
 	u.Id = id
 
-	return &u, nil
+	return u, nil
 }
 
 func (r *Repository) SaveRefreshToken(ctx context.Context, u *user.User, token dto.JWT) error {
@@ -117,7 +139,7 @@ func (r *Repository) CheckRefreshToken(ctx context.Context, userId string, refre
 		return fmt.Errorf("error save refresh token exec: %w", err)
 	}
 
-	if refreshToken.ExpiredAt.After(expiredAt) {
+	if time.Now().After(expiredAt) {
 		return auth.ErrRefreshTokenExpired
 	}
 

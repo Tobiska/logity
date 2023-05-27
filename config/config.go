@@ -13,7 +13,7 @@ type (
 	}
 
 	App struct {
-		Host string
+		Host string `env:"HOST_NAME" env-default:"LOGITY"`
 	}
 
 	Auth struct {
@@ -21,7 +21,7 @@ type (
 		SecretAccessKey      string `env:"SECRET_ACCESS_KEY"`
 		SecretRefreshKey     string `env:"SECRET_REFRESH_KEY"`
 		AccessTokenTTLInSec  int    `env:"ACCESS_TOKEN_TTL_IN_SEC" env-default:"350"`
-		RefreshTokenTTLInSec int    `env:"ACCESS_TOKEN_TTL_IN_SEC" env-default:"3600"`
+		RefreshTokenTTLInSec int    `env:"REFRESH_TOKEN_TTL_IN_SEC" env-default:"3600"`
 	}
 
 	Database struct {
@@ -33,11 +33,15 @@ type (
 
 var configInstance *Config
 var configErr error
-var once sync.Once
 
 func ReadConfig() (*Config, error) {
-	once.Do(func() {
-		configErr = cleanenv.ReadEnv(&configInstance)
-	})
+	if configInstance == nil {
+		var readConfigOnce sync.Once
+		readConfigOnce.Do(func() {
+			configInstance = &Config{}
+			configErr = cleanenv.ReadEnv(configInstance)
+		})
+	}
+
 	return configInstance, configErr
 }

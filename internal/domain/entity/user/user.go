@@ -5,7 +5,7 @@ import (
 	"regexp"
 )
 
-var emailRegex = regexp.MustCompile(`^[a-z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
+var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
 var phoneRegex = regexp.MustCompile(`^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$`)
 
 type Email string
@@ -28,14 +28,13 @@ func NewPhone(s string) (Phone, error) {
 
 type User struct {
 	Id           string
-	Username     string
 	Email        Email
 	Phone        Phone
 	Fio          string
 	PasswordHash string
 }
 
-func NewUser(username, email, phone, fio string) (*User, error) {
+func NewUser(email, phone, fio string) (*User, error) {
 	pn, err := NewPhone(phone)
 	if err != nil {
 		return nil, err
@@ -47,9 +46,8 @@ func NewUser(username, email, phone, fio string) (*User, error) {
 	}
 
 	return &User{
-		Username: username,
-		Email:    m,
-		Phone:    pn,
-		Fio:      fio,
+		Email: m,
+		Phone: pn,
+		Fio:   fio,
 	}, nil
 }

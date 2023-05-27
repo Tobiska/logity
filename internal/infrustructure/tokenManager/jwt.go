@@ -8,10 +8,6 @@ import (
 	"time"
 )
 
-type Claims struct {
-	jwt.RegisteredClaims
-}
-
 type TokenManager struct {
 	ttlAccess, ttlRefresh             time.Duration
 	secretAccessKey, secretRefreshKey string
@@ -30,12 +26,12 @@ func NewTokenManager(cfg *config.Config) *TokenManager {
 
 func (m *TokenManager) NewJWT(userId string) (jwtToken dto.JWT, err error) {
 	expiredAt := time.Now().Add(m.ttlAccess)
-	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodEdDSA, jwt.MapClaims{
+	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": userId,
 		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
 	})
-	signedToken, err := unsignedToken.SignedString(m.secretAccessKey)
+	signedToken, err := unsignedToken.SignedString([]byte(m.secretAccessKey))
 	if err != nil {
 		return jwtToken, err
 	}
@@ -47,12 +43,12 @@ func (m *TokenManager) NewJWT(userId string) (jwtToken dto.JWT, err error) {
 
 func (m *TokenManager) NewRefreshToken(userId string) (jwtToken dto.JWT, err error) {
 	expiredAt := time.Now().Add(m.ttlRefresh)
-	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodEdDSA, jwt.MapClaims{
+	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": userId,
 		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
 	})
-	signedToken, err := unsignedToken.SignedString(m.secretRefreshKey)
+	signedToken, err := unsignedToken.SignedString([]byte(m.secretRefreshKey))
 	if err != nil {
 		return jwtToken, err
 	}
@@ -63,24 +59,28 @@ func (m *TokenManager) NewRefreshToken(userId string) (jwtToken dto.JWT, err err
 }
 
 func (m *TokenManager) ParseToken(token string) (*dto.PayloadToken, error) {
-	jwtToken, err := jwt.ParseWithClaims(token, &Claims{}, func(token *jwt.Token) (interface{}, error) {
+	jwtToken, err := jwt.ParseWithClaims(token, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("signing method isn't HMAC")
 		}
 
-		return m.secretAccessKey, nil
+		return []byte(m.secretAccessKey), nil
 	})
 
 	if err != nil {
 		return nil, fmt.Errorf("error parse jwt token: %w", err)
 	}
 
-	claims, ok := jwtToken.Claims.(Claims)
+	claims, ok := jwtToken.Claims.(*jwt.RegisteredClaims)
 	if !ok || !jwtToken.Valid {
 		return nil, fmt.Errorf("error parse claims jwt token")
 	}
 
 	return &dto.PayloadToken{
 		UserId: claims.Subject,
+		Token: dto.JWT{
+			Token:     jwtToken.Raw,
+			ExpiredAt: claims.ExpiresAt.Time,
+		},
 	}, nil
 }
