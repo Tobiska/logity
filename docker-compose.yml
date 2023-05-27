@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  logity:
+    build:
+      context: .
+      dockerfile: build/docker/Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    depends_on:
+      - db
+
+  db:
+    image: postgres:14-alpine
+    volumes:
+      - dbdata:/var/lib/postgresql/data/
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+
+#  liquibase:
+#    image: liquibase/liquibase:4.15
+#    depends_on:
+#      - db
+#    volumes:
+#      - ./migration/liquibase:/liquibase/changelog
+#    command: [
+#      "sh",
+#      "-c",
+#      "liquibase update --url=\"jdbc:postgresql://db:5432/${POSTGRES_DB}?user=${POSTGRES_USER}&password=${POSTGRES_PASSWORD}&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
+#    ]
+
+volumes:
+  dbdata:
+    driver: local
