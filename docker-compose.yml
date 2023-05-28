@@ -18,10 +18,12 @@ services:
     volumes:
       - dbdata:/var/lib/postgresql/data/
     restart: unless-stopped
+    ports:
+      - "6432:5432"
     environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: logity_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
 
   liquibase:
     image: liquibase/liquibase:4.15
