@@ -6,7 +6,7 @@ RUN go mod download
 RUN go mod tidy
 COPY . .
 
-RUN CGO_ENABLED=0 GOOS=linux go build -o logity cmd/main.go
+RUN CGO_ENABLED=0 GOOS=linux go build -o /logity cmd/main.go
 
 FROM scratch
 
