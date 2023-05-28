@@ -34,7 +34,7 @@ services:
     command: [
       "sh",
       "-c",
-      "liquibase update --url=\"jdbc:postgresql://db:5432/${POSTGRES_DB}?user=${POSTGRES_USER}&password=${POSTGRES_PASSWORD}&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
+      "liquibase update --url=\"jdbc:postgresql://db:5432/logity_auth?user=postgres&password=postgres&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
     ]
 
 volumes:
