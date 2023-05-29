@@ -20,6 +20,7 @@ require (
 	github.com/jackc/puddle/v2 v2.2.0 // indirect
 	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/kr/text v0.2.0 // indirect
+	github.com/neo4j/neo4j-go-driver/v5 v5.9.0 // indirect
 	github.com/rogpeppe/go-internal v1.10.0 // indirect
 	golang.org/x/sync v0.1.0 // indirect
 	golang.org/x/text v0.9.0 // indirect

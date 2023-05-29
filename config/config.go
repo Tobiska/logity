@@ -7,9 +7,16 @@ import (
 
 type (
 	Config struct {
-		Database
-		Auth
 		App
+		Auth
+		Database
+		Neo4j
+	}
+
+	Neo4j struct {
+		Host     string `env:"NEO4J_HOST"`
+		Username string `env:"NEO4J_USERNAME"`
+		Password string `env:"NEO4J_PASSWORD"`
 	}
 
 	App struct {

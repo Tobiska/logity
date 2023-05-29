@@ -37,6 +37,24 @@ services:
       "liquibase update --url=\"jdbc:postgresql://db:5432/logity_auth?user=postgres&password=postgres&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
     ]
 
+  neo4j:
+    image: neo4j:3.5
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - neo4j:/var/lib/neo4j
+    environment:
+      # Raise memory limits
+      - NEO4J_dbms_memory_pagecache_size=1G
+      - NEO4J_dbms.memory.heap.initial_size=1G
+      - NEO4J_dbms_memory_heap_max__size=1G
+      - NEO4J_dbms_security_ldap_authorization_system__username=neo4j
+      - NEO4J_dbms_security_ldap_authorization_system__password=neo4j
+
 volumes:
   dbdata:
+    driver: local
+  neo4j:
     driver: local

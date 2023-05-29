@@ -18,4 +18,7 @@ type (
 		Hash(ctx context.Context, raw string) (string, error)
 		Check(ctx context.Context, raw, hash string) error
 	}
+
+	Driver interface {
+	}
 )
