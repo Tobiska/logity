@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="userid_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT userid_unique FOR (u:User) REQUIRE u.id IS UNIQUE</neo4j:cypher>
+        <rollback>DROP CONSTRAINT userid_unique</rollback>
+    </changeSet>
+    <changeSet id="postid_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT postid_unique FOR (p:Post) REQUIRE p.id IS UNIQUE</neo4j:cypher>
+        <rollback>DROP CONSTRAINT postid_unique</rollback>
+    </changeSet>
+</databaseChangeLog>

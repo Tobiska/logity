@@ -20,7 +20,7 @@ func NewTokenManager(cfg *config.Config) *TokenManager {
 		ttlRefresh:       time.Duration(cfg.RefreshTokenTTLInSec) * time.Second,
 		secretAccessKey:  cfg.SecretAccessKey,
 		secretRefreshKey: cfg.SecretRefreshKey,
-		issuer:           cfg.Host,
+		issuer:           cfg.App.Host,
 	}
 }
 
