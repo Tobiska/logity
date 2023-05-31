@@ -52,17 +52,16 @@ services:
       - NEO4J_server.memory.heap.max.size=1G
 
   liquibase-neo4j:
-    image: liquibase/liquibase:4.15
-
+    image: liquibase/liquibase:latest
     depends_on:
       - db
     volumes:
-      - ./ext/neo4j:/liquibase/classpath
+      - ./ext/neo4j:/liquibase/lib
       - ./migration/neo4j:/liquibase/changelog
     command: [
       "sh",
       "-c",
-      "liquibase update --url \"jdbc:neo4j:bolt//neo4j:5432\" --username neo4j --password sparta-ballad-domain-mars-miranda-5813 --changeLogFile \"changelog/changelog.xml\""
+      "liquibase update --url \"jdbc:neo4j:bolt://neo4j:7687\" --username neo4j --password sparta-ballad-domain-mars-miranda-5813 --changeLogFile \"changelog/changelog.xml\""
     ]
 
 volumes:
