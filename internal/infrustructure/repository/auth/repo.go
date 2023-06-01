@@ -43,7 +43,7 @@ func (r *Repository) CheckCredentials(ctx context.Context, dto dto.SignInInputDt
 	}
 
 	u := &user.User{}
-	err = r.client.QueryRow(ctx, query, args...).Scan(&u.Id, &u.Email, &u.Phone, &u.Fio, &u.PasswordHash)
+	err = r.client.QueryRow(ctx, query, args...).Scan(&u.Id, &u.Email, &u.Phone, &u.Username, &u.PasswordHash)
 	if errors.Is(err, pgx.ErrNoRows) {
 		return nil, fmt.Errorf("auth with login: %s doesn't exist", dto.Login)
 	}
@@ -67,7 +67,7 @@ func (r *Repository) FindUser(ctx context.Context, userId string) (*user.User, e
 	}
 
 	u := &user.User{}
-	if err := r.client.QueryRow(ctx, query, args...).Scan(&u.Id, &u.Email, &u.Phone, &u.Fio); err != nil {
+	if err := r.client.QueryRow(ctx, query, args...).Scan(&u.Id, &u.Email, &u.Phone, &u.Username); err != nil {
 		return nil, fmt.Errorf("error exec find user query: %w", err)
 	}
 

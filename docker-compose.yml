@@ -7,11 +7,12 @@ services:
       dockerfile: build/app/Dockerfile
     restart: unless-stopped
     ports:
-      - "8080:8080"
+      - "8081:8080"
     env_file:
       - dev.env
     depends_on:
       - db
+      - neo4j
 
   db:
     image: postgres:14-alpine
@@ -38,15 +39,19 @@ services:
     ]
 
   neo4j:
-    image: neo4j:5
+    image: neo4j:5.8.0-enterprise
     restart: unless-stopped
     ports:
       - "7474:7474"
       - "7687:7687"
     volumes:
-      - neo4j:/var/lib/neo4j
+      - ./exports/neo4j/data:/data/
+      - ./exports/neo4j/logs:/logs/
+      - ./exports/neo4j/plugins:/plugins/
     environment:
       # Raise memory limits
+      - NEO4J_AUTH=neo4j/testifyt
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
       - NEO4J_server.memory.pagecache.size=1G
       - NEO4J_server.memory.heap.initial.size=1G
       - NEO4J_server.memory.heap.max.size=1G
@@ -54,14 +59,14 @@ services:
   liquibase-neo4j:
     image: liquibase/liquibase:latest
     depends_on:
-      - db
+      - neo4j
     volumes:
-      - ./ext/neo4j:/liquibase/lib
+      - ./exports/liquibase:/liquibase/lib
       - ./migration/neo4j:/liquibase/changelog
     command: [
       "sh",
       "-c",
-      "liquibase update --url \"jdbc:neo4j:bolt://neo4j:7687\" --username neo4j --password sparta-ballad-domain-mars-miranda-5813 --changeLogFile \"changelog/changelog.xml\""
+      "liquibase update --url \"jdbc:neo4j:bolt://neo4j:7687?database=logity\" --username logity --password logitylogity --changeLogFile \"changelog/changelog.xml\""
     ]
 
 volumes:

@@ -13,13 +13,17 @@ var (
 )
 
 type (
-	Repository interface {
+	AuthRepository interface {
 		CheckCredentials(ctx context.Context, dto dto.SignInInputDto) (*user.User, error)
 		CreateUser(ctx context.Context, d dto.SignUpInputDto) (*user.User, error)
 		SaveRefreshToken(ctx context.Context, u *user.User, refreshToken dto.JWT) error
 		CheckRefreshToken(ctx context.Context, userId string, refreshToken dto.JWT) error
 		ResetPassword(ctx context.Context, dto dto.ResetPasswordDto) error
 		FindUser(ctx context.Context, userId string) (*user.User, error)
+	}
+
+	UserRepository interface {
+		CreateUser(ctx context.Context, u *user.User) error
 	}
 
 	TokenManager interface {

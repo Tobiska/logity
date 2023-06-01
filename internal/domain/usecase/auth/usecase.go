@@ -8,14 +8,16 @@ import (
 )
 
 type AuthUsecase struct {
-	repo         Repository
+	authRepo     AuthRepository
 	tokenManager TokenManager
+	userRepo     UserRepository
 }
 
-func NewUserUsecase(repo Repository, manager TokenManager) *AuthUsecase {
+func NewUserUsecase(repo AuthRepository, userRepo UserRepository, manager TokenManager) *AuthUsecase {
 	return &AuthUsecase{
-		repo:         repo,
+		authRepo:     repo,
 		tokenManager: manager,
+		userRepo:     userRepo,
 	}
 }
 
@@ -29,7 +31,7 @@ func (us AuthUsecase) FindUserByAccessToken(ctx context.Context, accessToken str
 		return nil, fmt.Errorf("parse token error: %w", err)
 	}
 
-	u, err := us.repo.FindUser(ctx, payload.UserId)
+	u, err := us.authRepo.FindUser(ctx, payload.UserId)
 	if err != nil {
 		return nil, fmt.Errorf("find user error: %w", err)
 	}
@@ -48,12 +50,12 @@ func (us AuthUsecase) Me(ctx context.Context) (*dto.MeOutputDto, error) {
 		UserId: u.Id,
 		Email:  string(u.Email),
 		Phone:  string(u.Phone),
-		Fio:    u.Fio,
+		Fio:    u.Username,
 	}, nil
 }
 
 func (us AuthUsecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.SignInOutputDto, error) {
-	u, err := us.repo.CheckCredentials(ctx, d)
+	u, err := us.authRepo.CheckCredentials(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("error check credentials: %w", err)
 	}
@@ -68,7 +70,7 @@ func (us AuthUsecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.Si
 		return nil, fmt.Errorf("error generate refresh token: %w", err)
 	}
 
-	if err := us.repo.SaveRefreshToken(ctx, u, refreshToken); err != nil {
+	if err := us.authRepo.SaveRefreshToken(ctx, u, refreshToken); err != nil {
 		return nil, fmt.Errorf("error save refresh token: %w", err)
 	}
 
@@ -91,7 +93,7 @@ func (us AuthUsecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenI
 		return jwtToken, fmt.Errorf("error parse refresh token: %w", err)
 	}
 
-	if err := us.repo.CheckRefreshToken(ctx, payload.UserId, payload.Token); err != nil {
+	if err := us.authRepo.CheckRefreshToken(ctx, payload.UserId, payload.Token); err != nil {
 		return jwtToken, fmt.Errorf("error check refresh token: %w", err)
 	}
 
@@ -104,9 +106,13 @@ func (us AuthUsecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenI
 }
 
 func (us AuthUsecase) SignUp(ctx context.Context, d dto.SignUpInputDto) (*dto.SignUpOutputDto, error) {
-	u, err := us.repo.CreateUser(ctx, d)
+	u, err := us.authRepo.CreateUser(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("error create auth: %w", err)
+	}
+
+	if err := us.userRepo.CreateUser(ctx, u); err != nil {
+		return nil, fmt.Errorf("error create user: %w", err)
 	}
 	return &dto.SignUpOutputDto{
 		UserId: u.Id,

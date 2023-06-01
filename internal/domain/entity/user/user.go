@@ -30,7 +30,7 @@ type User struct {
 	Id           string
 	Email        Email
 	Phone        Phone
-	Fio          string
+	Username     string
 	PasswordHash string
 }
 
@@ -46,8 +46,8 @@ func NewUser(email, phone, fio string) (*User, error) {
 	}
 
 	return &User{
-		Email: m,
-		Phone: pn,
-		Fio:   fio,
+		Email:    m,
+		Phone:    pn,
+		Username: fio,
 	}, nil
 }

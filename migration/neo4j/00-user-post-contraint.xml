@@ -3,7 +3,6 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-
     <changeSet id="userid_unique" author="tobiska">
         <neo4j:cypher>CREATE CONSTRAINT userid_unique FOR (u:User) REQUIRE u.id IS UNIQUE</neo4j:cypher>
         <rollback>DROP CONSTRAINT userid_unique</rollback>

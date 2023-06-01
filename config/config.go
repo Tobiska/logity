@@ -15,6 +15,7 @@ type (
 
 	Neo4j struct {
 		Host     string `env:"NEO4J_HOST"`
+		Database string `env:"NEO4J_DATABASE"`
 		Username string `env:"NEO4J_USERNAME"`
 		Password string `env:"NEO4J_PASSWORD"`
 	}
