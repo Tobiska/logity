@@ -1,6 +1,14 @@
 version: '3'
 
 services:
+  centrifugo:
+    container_name: centrifugo
+    image: centrifugo/centrifugo:v4
+    volumes:
+      - ./exports/centrifugo/config.json:/centrifugo/config.json
+    command: centrifugo -c config.json
+    ports:
+      - 8123:8000
   logity:
     build:
       context: .
@@ -11,10 +19,11 @@ services:
     env_file:
       - dev.env
     depends_on:
-      - db
+      - postgres
       - neo4j
 
-  db:
+  postgres:
+    container_name: postgres
     image: postgres:14-alpine
     volumes:
       - dbdata:/var/lib/postgresql/data/
@@ -26,19 +35,21 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
 
-  liquibase:
+  liquibase-postgres:
+    container_name: liquibase-postgres
     image: liquibase/liquibase:4.15
     depends_on:
-      - db
+      - postgres
     volumes:
       - ./migration/postgres:/liquibase/changelog
     command: [
       "sh",
       "-c",
-      "liquibase update --url=\"jdbc:postgresql://db:5432/logity_auth?user=postgres&password=postgres&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
+      "liquibase update --url=\"jdbc:postgresql://postgres:5432/logity_auth?user=postgres&password=postgres&sslmode=disable\" --changelog-file=\"changelog/changelog.xml\""
     ]
 
   neo4j:
+    container_name: neo4j
     image: neo4j:5.8.0-enterprise
     restart: unless-stopped
     ports:
@@ -57,6 +68,7 @@ services:
       - NEO4J_server.memory.heap.max.size=1G
 
   liquibase-neo4j:
+    container_name: liquibase-neo4j
     image: liquibase/liquibase:latest
     depends_on:
       - neo4j
