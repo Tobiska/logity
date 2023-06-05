@@ -25,7 +25,21 @@ func (us *Usecase) CreateNewRoom(ctx context.Context, dto input.CreateRoomDto) (
 		return nil, fmt.Errorf("can't find the user")
 	}
 
-	//room
+	r := room.NewFromRoomName(dto.Name)
 
-	us.repo.CreateRoom(ctx, u)
+	if err := us.repo.CreateRoom(ctx, u, r); err != nil {
+		return nil, err
+	}
+
+	r, err := us.repo.AttachUserToRoom(ctx, u.Id, r.Code)
+	if err != nil {
+		return nil, err
+	}
+
+	return &output.CreateRoomOutputDto{
+		Code:       r.Code,
+		Name:       r.Name,
+		Tag:        r.Tag,
+		CountUsers: len(r.Users),
+	}, nil
 }

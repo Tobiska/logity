@@ -3,12 +3,12 @@
                    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
                    xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
-    <changeSet id="userid_unique" author="tobiska">
-        <neo4j:cypher>CREATE CONSTRAINT userid_unique FOR (u:User) REQUIRE u.id IS UNIQUE</neo4j:cypher>
-        <rollback>DROP CONSTRAINT userid_unique</rollback>
+    <changeSet id="room_node_key" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT room IF NOT EXISTS FOR (r:Room) REQUIRE (r.id, r.username, r.tag) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT room</rollback>
     </changeSet>
-    <changeSet id="postid_unique" author="tobiska">
-        <neo4j:cypher>CREATE CONSTRAINT postid_unique FOR (p:Post) REQUIRE p.id IS UNIQUE</neo4j:cypher>
-        <rollback>DROP CONSTRAINT postid_unique</rollback>
+    <changeSet id="room_id_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT room IF NOT EXISTS FOR (r:Room) REQUIRE (r.id, r.username, r.tag) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT room</rollback>
     </changeSet>
 </databaseChangeLog>
