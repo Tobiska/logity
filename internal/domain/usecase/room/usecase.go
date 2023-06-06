@@ -27,17 +27,17 @@ func (us *Usecase) CreateNewRoom(ctx context.Context, dto input.CreateRoomDto) (
 
 	r := room.NewFromRoomName(dto.Name)
 
-	if err := us.repo.CreateRoom(ctx, u, r); err != nil {
+	if _, err := us.repo.CreateRoom(ctx, u.Id, r); err != nil {
 		return nil, err
 	}
 
-	r, err := us.repo.AttachUserToRoom(ctx, u.Id, r.Code)
+	r, err := us.repo.AttachUserToRoom(ctx, u.Id, r.Id)
 	if err != nil {
 		return nil, err
 	}
 
 	return &output.CreateRoomOutputDto{
-		Code:       r.Code,
+		Id:         r.Id,
 		Name:       r.Name,
 		Tag:        r.Tag,
 		CountUsers: len(r.Users),
