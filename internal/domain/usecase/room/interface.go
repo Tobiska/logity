@@ -18,6 +18,8 @@ type (
 		ShowAllAttachedRoom(ctx context.Context, userId string) ([]*room.Room, error)
 
 		AttachUserToRoom(ctx context.Context, userId, roomCode string) (*room.Room, error)
-		DetachUserFromRoom(ctx context.Context, userId, roomCode string) (*room.Room, error)
+		CheckInvite(ctx context.Context, userId, roomCode string) error
+		InviteUserToRoom(ctx context.Context, userId, roomCode string) error
+		DetachUserFromRoom(ctx context.Context, userId, roomCode string) error
 	}
 )

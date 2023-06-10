@@ -8,7 +8,7 @@
         <rollback>DROP CONSTRAINT room</rollback>
     </changeSet>
     <changeSet id="room_id_unique" author="tobiska">
-        <neo4j:cypher>CREATE CONSTRAINT room IF NOT EXISTS FOR (r:Room) REQUIRE (r.id, r.username, r.tag) IS NODE KEY</neo4j:cypher>
-        <rollback>DROP CONSTRAINT room</rollback>
+        <neo4j:cypher>CREATE CONSTRAINT room_id IF NOT EXISTS FOR (r:Room) REQUIRE (r.id, r.username, r.tag) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT room_id</rollback>
     </changeSet>
 </databaseChangeLog>

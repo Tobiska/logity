@@ -8,7 +8,7 @@ services:
       - ./exports/centrifugo/config.json:/centrifugo/config.json
     command: centrifugo -c config.json
     ports:
-      - 8123:8000
+      - "8123:8000"
   logity:
     container_name: logity
     build:
@@ -27,7 +27,7 @@ services:
     container_name: postgres
     image: postgres:14-alpine
     volumes:
-      - dbdata:/var/lib/postgresql/data/
+      - ./exports/postgres/data:/var/lib/postgresql/data
     restart: unless-stopped
     ports:
       - "6432:5432"

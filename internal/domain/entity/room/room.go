@@ -15,7 +15,9 @@ type Room struct {
 	Id         string // служеный идентификатор
 	Name       string // имя комнаты для идентификации юзерами
 	Tag        string // краткий тэг генерирующийся из Name
-	Users      []*user.User
+	Owner      *user.User
+	Members    []*user.User
+	Inviters   []*user.User
 	LogHistory []*log.Log // последние 1000 логов
 }
 

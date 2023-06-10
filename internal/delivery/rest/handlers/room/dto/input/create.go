@@ -1,4 +1,4 @@
-package room
+package input
 
 import validation "github.com/go-ozzo/ozzo-validation"
 

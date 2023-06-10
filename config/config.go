@@ -22,7 +22,7 @@ type (
 
 	App struct {
 		Host    string `env:"HOST_NAME" env-default:"LOGITY"`
-		ApiPort string `env:"API_PORT" env-default:"8080"`
+		ApiPort string `env:"API_PORT" env-default:":8080"`
 	}
 
 	Auth struct {
