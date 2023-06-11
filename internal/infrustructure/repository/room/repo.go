@@ -191,11 +191,14 @@ func (r *Repository) AttachUserToRoom(ctx context.Context, userId, roomId string
 }
 
 func (r *Repository) getRoomInformation(ctx context.Context, tx neo4j.ManagedTransaction, roomId string) (*room.Room, error) {
-	resp, err := tx.Run(ctx, `MATCH (r:Room {id: '319e860d-73a0-4479-a3bc-59a39f727c08'})
-OPTIONAL MATCH (r)<-[:OWNED]-(owner)
-OPTIONAL  MATCH (r)<-[:JOINED]-(members)    
-OPTIONAL  MATCH (r)<-[:INVITED]-(inviters)    
-RETURN apoc.convert.toJson(properties(r)), apoc.convert.toJson(properties(owner)), apoc.convert.toJson(apoc.convert.toList(collect(properties(members)))), apoc.convert.toJson(apoc.convert.toList(collect(properties(inviters))))`,
+	resp, err := tx.Run(ctx, `MATCH (r:Room {id: $roomId})
+			OPTIONAL MATCH (r)<-[:OWNED]-(owner)
+			OPTIONAL  MATCH (r)<-[:JOINED]-(members)    
+			OPTIONAL  MATCH (r)<-[:INVITED]-(inviters)    
+			RETURN apoc.convert.toJson(properties(r)),
+				   apoc.convert.toJson(properties(owner)),
+				   apoc.convert.toJson(apoc.convert.toList(collect(DISTINCT properties(members)))),
+				   apoc.convert.toJson(apoc.convert.toList(collect(DISTINCT properties(inviters))))`,
 		map[string]any{
 			"roomId": roomId,
 		})
