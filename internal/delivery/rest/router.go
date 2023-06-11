@@ -4,6 +4,7 @@ import (
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
 	"logity/internal/delivery/rest/handlers/auth"
+	"logity/internal/delivery/rest/handlers/operating"
 	"logity/internal/delivery/rest/handlers/room"
 	"logity/internal/domain/usecase"
 )
@@ -16,8 +17,9 @@ func NewRouter() chi.Router {
 
 func RegisterRouting(r chi.Router, env *usecase.Env) {
 
-	authHandler := auth.NewHandler(env.AuthUsecase)
+	authHandler := auth.NewHandler(env.AuthUsecase, env.RoomUsecase)
 	roomHandler := room.NewHandler(env.RoomUsecase)
+	operatingHandler := operating.NewHandler(env.OperatingUsecase)
 
 	//not secure routes
 	r.Group(func(r chi.Router) {
@@ -28,5 +30,6 @@ func RegisterRouting(r chi.Router, env *usecase.Env) {
 	r.Group(func(r chi.Router) {
 		r.Use(authHandler.AuthMiddleware)
 		roomHandler.Register(r)
+		operatingHandler.Register(r)
 	})
 }

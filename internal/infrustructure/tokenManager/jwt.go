@@ -9,29 +9,50 @@ import (
 )
 
 type TokenManager struct {
-	ttlAccess, ttlRefresh             time.Duration
-	secretAccessKey, secretRefreshKey string
-	issuer                            string
+	ttlAccess, ttlRefresh, ttlRealTimeServer                   time.Duration
+	secretAccessKey, secretRefreshKey, secretRealTimeServerKey string
+	issuer                                                     string
 }
 
 func NewTokenManager(cfg *config.Config) *TokenManager {
 	return &TokenManager{
-		ttlAccess:        time.Duration(cfg.AccessTokenTTLInSec) * time.Second,
-		ttlRefresh:       time.Duration(cfg.RefreshTokenTTLInSec) * time.Second,
-		secretAccessKey:  cfg.SecretAccessKey,
-		secretRefreshKey: cfg.SecretRefreshKey,
-		issuer:           cfg.App.Host,
+		ttlAccess:               time.Duration(cfg.AccessTokenTTLInSec) * time.Second,
+		ttlRefresh:              time.Duration(cfg.RefreshTokenTTLInSec) * time.Second,
+		ttlRealTimeServer:       time.Duration(cfg.Centrifugo.TokenTTLInSec) * time.Second,
+		secretAccessKey:         cfg.SecretAccessKey,
+		secretRefreshKey:        cfg.SecretRefreshKey,
+		secretRealTimeServerKey: cfg.Centrifugo.SecretKey,
+		issuer:                  cfg.App.Host,
 	}
 }
 
-func (m *TokenManager) NewJWT(userId string) (jwtToken dto.JWT, err error) {
+func (m *TokenManager) NewAccessToken(userId string) (jwtToken dto.JWT, err error) {
 	expiredAt := time.Now().Add(m.ttlAccess)
 	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
 		"sub": userId,
 		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
+		"aud": m.issuer,
 	})
 	signedToken, err := unsignedToken.SignedString([]byte(m.secretAccessKey))
+	if err != nil {
+		return jwtToken, err
+	}
+	return dto.JWT{
+		Token:     signedToken,
+		ExpiredAt: expiredAt,
+	}, nil
+}
+
+func (m *TokenManager) NewRealTimeToken(userId string) (jwtToken dto.JWT, err error) {
+	expiredAt := time.Now().Add(m.ttlRealTimeServer)
+	unsignedToken := jwt.NewWithClaims(jwt.SigningMethodHS512, jwt.MapClaims{
+		"sub": userId,
+		"exp": expiredAt.Unix(),
+		"iss": m.issuer,
+		"aud": "centrifugo",
+	})
+	signedToken, err := unsignedToken.SignedString([]byte(m.secretRealTimeServerKey))
 	if err != nil {
 		return jwtToken, err
 	}
@@ -47,6 +68,7 @@ func (m *TokenManager) NewRefreshToken(userId string) (jwtToken dto.JWT, err err
 		"sub": userId,
 		"exp": expiredAt.Unix(),
 		"iss": m.issuer,
+		"aud": m.issuer,
 	})
 	signedToken, err := unsignedToken.SignedString([]byte(m.secretRefreshKey))
 	if err != nil {

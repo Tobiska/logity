@@ -3,29 +3,32 @@ package auth
 import (
 	"context"
 	"fmt"
+	"logity/config"
 	"logity/internal/domain/entity/user"
 	"logity/internal/domain/usecase/auth/dto"
 )
 
-type AuthUsecase struct {
+type Usecase struct {
 	authRepo     AuthRepository
 	tokenManager TokenManager
 	userRepo     UserRepository
+	cfg          *config.Config
 }
 
-func NewUserUsecase(repo AuthRepository, userRepo UserRepository, manager TokenManager) *AuthUsecase {
-	return &AuthUsecase{
+func NewUserUsecase(repo AuthRepository, userRepo UserRepository, manager TokenManager, cfg *config.Config) *Usecase {
+	return &Usecase{
 		authRepo:     repo,
 		tokenManager: manager,
 		userRepo:     userRepo,
+		cfg:          cfg,
 	}
 }
 
-func (us AuthUsecase) RevokeRefreshToken(_ context.Context, _ string) error {
+func (us Usecase) RevokeRefreshToken(_ context.Context, _ string) error {
 	panic("implement RevokeRefreshToken me!!!")
 }
 
-func (us AuthUsecase) FindUserByAccessToken(ctx context.Context, accessToken string) (*user.User, error) {
+func (us Usecase) FindUserByAccessToken(ctx context.Context, accessToken string) (*user.User, error) {
 	payload, err := us.tokenManager.ParseToken(accessToken)
 	if err != nil {
 		return nil, fmt.Errorf("parse token error: %w", err)
@@ -39,7 +42,7 @@ func (us AuthUsecase) FindUserByAccessToken(ctx context.Context, accessToken str
 	return u, err
 }
 
-func (us AuthUsecase) Me(ctx context.Context) (*dto.MeOutputDto, error) {
+func (us Usecase) Me(ctx context.Context) (*dto.MeOutputDto, error) {
 	u := user.ExtractFromCtx(ctx)
 
 	if u == nil {
@@ -54,7 +57,7 @@ func (us AuthUsecase) Me(ctx context.Context) (*dto.MeOutputDto, error) {
 	}, nil
 }
 
-func (us AuthUsecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.SignInOutputDto, error) {
+func (us Usecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.SignInOutputDto, error) {
 	u, err := us.authRepo.CheckCredentials(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("error check credentials: %w", err)
@@ -74,20 +77,37 @@ func (us AuthUsecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.Si
 		return nil, fmt.Errorf("error save refresh token: %w", err)
 	}
 
-	//todo после сохранения токена его сразу же закхотят отозвать, тогда accessToken будет не действительный ровно до истечения.
+	//todo после сохранения токена его сразу же захотят отозвать, тогда accessToken будет не действительный ровно до истечения.
 
-	accessToken, err := us.tokenManager.NewJWT(userId)
+	accessToken, err := us.tokenManager.NewAccessToken(userId)
 	if err != nil {
 		return nil, fmt.Errorf("error generate access token: %w", err)
+	}
+
+	rtcToken, err := us.tokenManager.NewRealTimeToken(u.Id)
+	if err != nil {
+		return nil, fmt.Errorf("error generate rtc token: %w", err)
 	}
 
 	return &dto.SignInOutputDto{
 		AccessToken:  accessToken,
 		RefreshToken: refreshToken,
+		RTCToken:     rtcToken,
+		RTCHost:      us.cfg.ClientHost,
 	}, nil
 }
 
-func (us AuthUsecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenInputDto) (jwtToken dto.JWT, err error) {
+func (us Usecase) UpdateRealTimeServerToken(ctx context.Context) (dto.JWT, error) {
+	u := user.ExtractFromCtx(ctx)
+	token, err := us.tokenManager.NewRealTimeToken(u.Id)
+	if err != nil {
+		return dto.JWT{}, fmt.Errorf("error generate rtc token: %w", err)
+	}
+
+	return token, nil
+}
+
+func (us Usecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenInputDto) (jwtToken dto.JWT, err error) {
 	payload, err := us.tokenManager.ParseToken(in.RefreshToken)
 	if err != nil {
 		return jwtToken, fmt.Errorf("error parse refresh token: %w", err)
@@ -97,7 +117,7 @@ func (us AuthUsecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenI
 		return jwtToken, fmt.Errorf("error check refresh token: %w", err)
 	}
 
-	accessToken, err := us.tokenManager.NewJWT(payload.UserId)
+	accessToken, err := us.tokenManager.NewAccessToken(payload.UserId)
 	if err != nil {
 		return jwtToken, fmt.Errorf("error generate access token %w", err)
 	}
@@ -105,7 +125,7 @@ func (us AuthUsecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenI
 	return accessToken, nil
 }
 
-func (us AuthUsecase) SignUp(ctx context.Context, d dto.SignUpInputDto) (*dto.SignUpOutputDto, error) {
+func (us Usecase) SignUp(ctx context.Context, d dto.SignUpInputDto) (*dto.SignUpOutputDto, error) {
 	u, err := us.authRepo.CreateUser(ctx, d)
 	if err != nil {
 		return nil, fmt.Errorf("error create auth: %w", err)

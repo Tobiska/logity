@@ -9,16 +9,19 @@ import (
 )
 
 type Usecase struct {
-	repo RoomRepository
+	repo      Repository
+	publisher Publisher
 }
 
-func NewRoomUsecase(repo RoomRepository) *Usecase {
+func NewRoomUsecase(repo Repository, publisher Publisher) *Usecase {
 	return &Usecase{
-		repo: repo,
+		repo:      repo,
+		publisher: publisher,
 	}
 }
 
 func (us *Usecase) CreateNewRoom(ctx context.Context, dto input.CreateRoomDto) (*room.Room, error) {
+	//todo реализовать транизакции: если комната создана, но owner на неё не подписан нужен rollback
 	u := user.ExtractFromCtx(ctx)
 	if u == nil {
 		return nil, fmt.Errorf("can't find the user")
@@ -31,6 +34,10 @@ func (us *Usecase) CreateNewRoom(ctx context.Context, dto input.CreateRoomDto) (
 
 	newRoom, err := us.repo.GetRoomByCode(ctx, createdRoom.Id)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := us.publisher.SubscribeUserOnRoom(ctx, u, newRoom); err != nil {
 		return nil, err
 	}
 
@@ -47,10 +54,42 @@ func (us *Usecase) InviteToRoom(ctx context.Context, dto input.InviteToRoomDto) 
 		return err
 	}
 
+	//todo оправить notifications
+
+	return nil
+}
+
+func (us *Usecase) ShowRooms(ctx context.Context) ([]*room.Room, error) {
+	u := user.ExtractFromCtx(ctx)
+	if u == nil {
+		return nil, fmt.Errorf("can't find the user")
+	}
+
+	rooms, err := us.repo.ShowAllAttachedRoom(ctx, u.Id)
+	if err != nil {
+		return nil, err
+	}
+
+	return rooms, nil
+}
+
+func (us *Usecase) SubscribesRooms(ctx context.Context) error {
+	u := user.ExtractFromCtx(ctx)
+	rooms, err := us.repo.ShowAllAttachedRoom(ctx, u.Id)
+	if err != nil {
+		return err
+	}
+
+	for _, r := range rooms {
+		if err := us.publisher.SubscribeUserOnRoom(ctx, u, r); err != nil {
+			fmt.Printf("error subscribing on room: %s\n", err) //todo убрать, когда появяться логи
+		}
+	}
 	return nil
 }
 
 func (us *Usecase) JoinToRoom(ctx context.Context, dto input.JoinToRoomDto) (*room.Room, error) {
+	//todo реализовать транизакции: если комната создана, но owner на неё не подписан нужен rollback
 	u := user.ExtractFromCtx(ctx)
 	if u == nil {
 		return nil, fmt.Errorf("can't find the user")
@@ -62,6 +101,14 @@ func (us *Usecase) JoinToRoom(ctx context.Context, dto input.JoinToRoomDto) (*ro
 
 	r, err := us.repo.AttachUserToRoom(ctx, u.Id, dto.RoomId)
 	if err != nil {
+		return nil, err
+	}
+
+	if err := us.publisher.SubscribeUserOnRoom(ctx, u, r); err != nil {
+		return nil, err
+	}
+
+	if err := us.publisher.RoomUpdatedPublish(ctx, r); err != nil {
 		return nil, err
 	}
 

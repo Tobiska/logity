@@ -15,6 +15,8 @@ func (s SignInInputDto) Validate() error {
 }
 
 type SignInOutputDto struct {
-	AccessToken  JWT `json:"access_token" bson:"login"`
-	RefreshToken JWT `json:"refresh_token" bson:"password"`
+	AccessToken  JWT    `json:"access_token" bson:"access_token"`
+	RefreshToken JWT    `json:"refresh_token" bson:"refresh_token"`
+	RTCToken     JWT    `json:"rtc_token" bson:"rtc_token"`
+	RTCHost      string `json:"rtc_host" bson:"rtc_host"`
 }

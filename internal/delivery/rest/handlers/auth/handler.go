@@ -7,17 +7,20 @@ import (
 	"logity/internal/domain/entity/user"
 	"logity/internal/domain/usecase/auth"
 	"logity/internal/domain/usecase/auth/dto"
+	"logity/internal/domain/usecase/room"
 	"net/http"
 	"strings"
 )
 
 type Handler struct {
-	usecase *auth.AuthUsecase
+	authUsecase *auth.Usecase
+	roomUsecase *room.Usecase
 }
 
-func NewHandler(usecase *auth.AuthUsecase) *Handler {
+func NewHandler(usecase *auth.Usecase, roomUsecase *room.Usecase) *Handler {
 	return &Handler{
-		usecase: usecase,
+		authUsecase: usecase,
+		roomUsecase: roomUsecase,
 	}
 }
 
@@ -33,7 +36,7 @@ func (h *Handler) handleSignIn(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte(fmt.Sprintf("validation error: %s", err)))
 		return
 	}
-	signInDto, err := h.usecase.SignIn(r.Context(), dto.SignInInputDto{
+	signInDto, err := h.authUsecase.SignIn(r.Context(), dto.SignInInputDto{
 		Login:    signIn.Login,
 		Password: signIn.Password,
 	})
@@ -69,7 +72,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 			w.Write([]byte("content of Authorization header isn't valid"))
 			return
 		}
-		u, err := h.usecase.FindUserByAccessToken(r.Context(), splitedAuthHeader[1])
+		u, err := h.authUsecase.FindUserByAccessToken(r.Context(), splitedAuthHeader[1])
 		if err != nil {
 			w.WriteHeader(401)
 			w.Write([]byte(fmt.Sprintf("error find user: %s", err)))
@@ -81,7 +84,7 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 }
 
 func (h *Handler) handleMe(w http.ResponseWriter, r *http.Request) {
-	out, err := h.usecase.Me(r.Context())
+	out, err := h.authUsecase.Me(r.Context())
 	if err != nil {
 		w.WriteHeader(500)
 		w.Write([]byte(fmt.Sprintf("%s", err)))
@@ -114,7 +117,7 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.usecase.SignUp(r.Context(), in)
+	out, err := h.authUsecase.SignUp(r.Context(), in)
 	if err != nil {
 		w.WriteHeader(400) //todo separate erros by codeStatus
 		w.Write([]byte(fmt.Sprintf("error: %s", err)))
@@ -146,7 +149,7 @@ func (h *Handler) handleUpdateAccessToken(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	out, err := h.usecase.UpdateAccessToken(r.Context(), in)
+	out, err := h.authUsecase.UpdateAccessToken(r.Context(), in)
 	if err != nil {
 		w.WriteHeader(400) //todo separate erros by codeStatus
 		w.Write([]byte(fmt.Sprintf("error: %s", err)))

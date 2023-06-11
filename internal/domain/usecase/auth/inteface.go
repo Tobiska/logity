@@ -27,8 +27,9 @@ type (
 	}
 
 	TokenManager interface {
-		NewJWT(userId string) (dto.JWT, error)
+		NewAccessToken(userId string) (dto.JWT, error)
 		NewRefreshToken(userId string) (dto.JWT, error)
+		NewRealTimeToken(userId string) (jwtToken dto.JWT, err error)
 		ParseToken(accessToken string) (*dto.PayloadToken, error)
 	}
 )

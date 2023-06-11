@@ -82,6 +82,24 @@ func (h *Handler) handleInviteRoom(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+func (h *Handler) handleShowRooms(w http.ResponseWriter, r *http.Request) {
+	rooms, err := h.usecase.ShowRooms(r.Context())
+	if err != nil {
+		w.WriteHeader(400) //todo separate erros by codeStatus
+		w.Write([]byte(fmt.Sprintf("error: %s", err)))
+		return
+	}
+
+	rs := output.NewShowRoomsOutputDto(rooms)
+	resp, err := json.Marshal(rs)
+	if err != nil {
+		w.WriteHeader(400) //todo separate erros by codeStatus
+		w.Write([]byte(fmt.Sprintf("error: %s", err)))
+	}
+	w.WriteHeader(200)
+	w.Write(resp)
+}
+
 func (h *Handler) handleJoinRoom(w http.ResponseWriter, r *http.Request) {
 	roomId := chi.URLParam(r, "room_id")
 
@@ -137,6 +155,7 @@ func (h *Handler) Register(r chi.Router) {
 			r.Patch("/", h.handleInviteRoom)
 			r.Patch("/{room_id}", h.handleJoinRoom)
 			r.Get("/{room_id}", h.handleShowRoom)
+			r.Get("/", h.handleShowRooms)
 		})
 	})
 }

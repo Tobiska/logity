@@ -16,6 +16,7 @@ var (
 	ErrUserNotExistOrAlreadyInvited = fmt.Errorf("error user doesn't exist or user already invited")
 	ErrInviteNotExist               = fmt.Errorf("error user doesn't invited to room")
 	ErrRoomNotExist                 = fmt.Errorf("error room doesn't exist")
+	ErrRoomJoinedResponse           = fmt.Errorf("error rooms joined response")
 )
 
 type Repository struct {
@@ -28,6 +29,41 @@ func NewRoomRepository(driver neo4j.DriverWithContext, cfg *config.Neo4j) *Repos
 		driver: driver,
 		cfg:    cfg,
 	}
+}
+
+func (r *Repository) ShowAllAttachedRoom(ctx context.Context, userId string) ([]*room.Room, error) {
+	session := r.driver.NewSession(ctx, neo4j.SessionConfig{
+		AccessMode:   neo4j.AccessModeRead,
+		DatabaseName: r.cfg.Database,
+	})
+
+	resp, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
+		result, err := tx.Run(ctx, "MATCH (u:User {id: $userId})-[:JOINED]->(r:Room) RETURN   apoc.convert.toJson(properties(r))", map[string]any{
+			"userId": userId,
+		})
+		if err != nil {
+			return nil, fmt.Errorf("error execute: %w", err)
+		}
+
+		rooms := make([]*room.Room, 0)
+		for result.Next(ctx) {
+			if len(result.Record().Values) != 1 {
+				return nil, ErrRoomJoinedResponse
+			}
+			roomDto := &Room{}
+			roomRaw := result.Record().Values[0]
+			if err := json.Unmarshal([]byte(roomRaw.(string)), roomDto); err != nil {
+				return nil, fmt.Errorf("error unmarshal room: %w", err)
+			}
+			rooms = append(rooms, roomDto.toDomain())
+		}
+		return rooms, nil
+	})
+	if err != nil {
+		return nil, fmt.Errorf("error")
+	}
+
+	return resp.([]*room.Room), nil
 }
 
 func (r *Repository) CreateRoom(ctx context.Context, userId string, inputRoom *room.Room) (*room.Room, error) {
@@ -114,9 +150,6 @@ func (r *Repository) FindRoomByFilter(ctx context.Context, filter dto.FindFilter
 }
 func (r *Repository) ShowAllCreatedRoom(ctx context.Context, userId string) ([]*room.Room, error) {
 	panic("sdsd")
-}
-func (r *Repository) ShowAllAttachedRoom(ctx context.Context, userId string) ([]*room.Room, error) {
-	panic("dsdsds")
 }
 
 func (r *Repository) CheckInvite(ctx context.Context, userId, roomId string) error {

@@ -1,7 +1,40 @@
 {
-  "token_hmac_secret_key": "secret",
-  "api_key": "my_api_key",
+  "token_hmac_secret_key": "4QH6JDhy",
+  "api_key": "NdnY4YDJ",
   "admin_password": "admin",
   "admin_secret": "admin",
-  "admin": true
+  "admin": true,
+  "debug": true,
+  "health": true,
+  "client_user_connection_limit": 0,
+  "client_connection_limit": 0,
+  "client_concurrency": 1,
+  "client_stale_close_delay": "10s",
+  "port": 8000,
+  "internal_port": 9000,
+  "allowed_origins": [
+    "*"
+  ],
+
+  "token_audience": "centrifugo",
+  "token_issuer": "LOGITY",
+
+  "namespaces": [
+    {
+      "name": "room",
+      "history_size": 10,
+      "history_ttl": "60s",
+      "presence": true,
+      "join_leave": true,
+      "force_push_join_leave": true,
+      "allow_publish_for_client": true,
+      "allow_history_for_subscriber": true
+    },
+    {
+      "name": "rooms_user"
+    },
+    {
+      "name": "notifications"
+    }
+  ]
 }

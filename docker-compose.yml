@@ -9,6 +9,7 @@ services:
     command: centrifugo -c config.json
     ports:
       - "8123:8000"
+      - "9123:9000"
   logity:
     container_name: logity
     build:
@@ -21,6 +22,7 @@ services:
       - dev.env
     depends_on:
       - postgres
+      - centrifugo
       - neo4j
 
   postgres:

@@ -11,6 +11,7 @@ type (
 		Auth
 		Database
 		Neo4j
+		Centrifugo
 	}
 
 	Neo4j struct {
@@ -18,6 +19,14 @@ type (
 		Database string `env:"NEO4J_DATABASE"`
 		Username string `env:"NEO4J_USERNAME"`
 		Password string `env:"NEO4J_PASSWORD"`
+	}
+
+	Centrifugo struct {
+		ApiHost       string `env:"CENTRIFUGO_API_HOST"`
+		ClientHost    string `env:"CENTRIFUGO_CLIENT_HOST"`
+		ApiKey        string `env:"CENTRIFUGO_API_KEY"`
+		SecretKey     string `env:"CENTRIFUGO_SECRET_KEY"`
+		TokenTTLInSec int    `env:"CENTRIFUGO_TOKEN_TTL_IN_SEC" env-default:"10"`
 	}
 
 	App struct {
