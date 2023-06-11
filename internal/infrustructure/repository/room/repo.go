@@ -36,6 +36,7 @@ func (r *Repository) ShowAllAttachedRoom(ctx context.Context, userId string) ([]
 		AccessMode:   neo4j.AccessModeRead,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	resp, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		result, err := tx.Run(ctx, "MATCH (u:User {id: $userId})-[:JOINED]->(r:Room) RETURN   apoc.convert.toJson(properties(r))", map[string]any{
@@ -71,6 +72,7 @@ func (r *Repository) CreateRoom(ctx context.Context, userId string, inputRoom *r
 		AccessMode:   neo4j.AccessModeWrite,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	resp, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		res, err := tx.Run(ctx, `MATCH (u:User) WHERE u.id = $userId
@@ -122,6 +124,7 @@ func (r *Repository) GetRoomByCode(ctx context.Context, roomCode string) (*room.
 		AccessMode:   neo4j.AccessModeRead,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	resp, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		newRoom, err := r.getRoomInformation(ctx, tx, roomCode)
@@ -157,6 +160,7 @@ func (r *Repository) CheckInvite(ctx context.Context, userId, roomId string) err
 		AccessMode:   neo4j.AccessModeRead,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	_, err := session.ExecuteRead(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		if err := r.checkInvite(ctx, tx, userId, roomId); err != nil {
@@ -198,6 +202,7 @@ func (r *Repository) AttachUserToRoom(ctx context.Context, userId, roomId string
 		AccessMode:   neo4j.AccessModeWrite,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	resp, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		if err := r.checkInvite(ctx, tx, userId, roomId); err != nil {
@@ -292,6 +297,7 @@ func (r *Repository) InviteUserToRoom(ctx context.Context, userId, roomId string
 		AccessMode:   neo4j.AccessModeWrite,
 		DatabaseName: r.cfg.Database,
 	})
+	defer session.Close(ctx)
 
 	_, err := session.ExecuteWrite(ctx, func(tx neo4j.ManagedTransaction) (any, error) {
 		res, err := tx.Run(ctx, `MATCH (u:User) WHERE u.id = $userId

@@ -8,11 +8,14 @@ import (
 	"logity/internal/delivery/rest"
 	"logity/internal/domain/usecase"
 	authUsecase "logity/internal/domain/usecase/auth"
+	log2 "logity/internal/domain/usecase/log"
 	"logity/internal/domain/usecase/operating"
 	"logity/internal/domain/usecase/room"
 	"logity/internal/infrustructure/genHash/bcrypt"
+	"logity/internal/infrustructure/realtime/logs"
 	room3 "logity/internal/infrustructure/realtime/room"
 	"logity/internal/infrustructure/repository/auth"
+	log3 "logity/internal/infrustructure/repository/log"
 	room2 "logity/internal/infrustructure/repository/room"
 	"logity/internal/infrustructure/repository/users"
 	"logity/internal/infrustructure/tokenManager"
@@ -40,7 +43,8 @@ func Run(cfg *config.Config) {
 		log.Fatalf(fmt.Sprintf("error liquibase driver init: %s", err))
 	}
 
-	roomRTCPublisher := room3.NewPublisher(centrifugoClient)
+	roomPublisher := room3.NewPublisher(centrifugoClient)
+	logPublisher := logs.NewPublisher(centrifugoClient)
 
 	generator := bcrypt.NewGenerator(&cfg.Auth)
 
@@ -50,13 +54,16 @@ func Run(cfg *config.Config) {
 
 	userRepo := users.NewRepository(neo4jDriver, &cfg.Neo4j)
 
+	logRepo := log3.NewRepository(neo4jDriver, &cfg.Neo4j)
+
 	tokenMng := tokenManager.NewTokenManager(cfg)
 
 	authUc := authUsecase.NewUserUsecase(authRepo, userRepo, tokenMng, cfg)
-	roomUc := room.NewRoomUsecase(roomRepo, roomRTCPublisher)
+	roomUc := room.NewRoomUsecase(roomRepo, roomPublisher)
+	logUc := log2.NewUsecase(logRepo, logPublisher)
 	operatingUc := operating.NewUsecase(roomUc, authUc)
 
-	env := usecase.NewEnv(roomUc, authUc, operatingUc)
+	env := usecase.NewEnv(roomUc, authUc, operatingUc, logUc)
 
 	r := rest.NewRouter()
 	rest.RegisterRouting(r, env)
