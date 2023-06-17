@@ -6,7 +6,7 @@
                 <constraints nullable="false" primaryKey="true" primaryKeyName="pk_product_source"/>
             </column>
             <column name="email" type="VARCHAR(50)">
-                <constraints unique="true" nullable="false"/>
+                <constraints unique="true" nullable="true"/>
             </column>
             <column name="phone" type="VARCHAR(12)">
                 <constraints unique="true" nullable="true"/>

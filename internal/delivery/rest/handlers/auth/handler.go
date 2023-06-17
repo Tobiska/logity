@@ -104,7 +104,7 @@ func (h *Handler) handleMe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
-	in := dto.SignUpInputDto{}
+	in := dto.SignUpByEmailInputDto{}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte(fmt.Sprintf("error decode request body: %s", err)))
@@ -117,7 +117,7 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	out, err := h.authUsecase.SignUp(r.Context(), in)
+	out, err := h.authUsecase.SignUpByEmail(r.Context(), in)
 	if err != nil {
 		w.WriteHeader(400) //todo separate erros by codeStatus
 		w.Write([]byte(fmt.Sprintf("error: %s", err)))

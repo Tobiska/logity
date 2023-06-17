@@ -15,10 +15,10 @@ type Room struct {
 }
 
 type User struct {
-	Id       string `json:"id"`
-	Email    string `json:"email"`
-	Phone    string `json:"phone"`
-	Username string `json:"username"`
+	Id       string  `json:"id"`
+	Email    *string `json:"email"`
+	Phone    *string `json:"phone"`
+	Username string  `json:"username"`
 }
 
 func (r Room) toDomain() *room.Room {
@@ -47,7 +47,7 @@ func (u User) toDomain() *user.User {
 	return &user.User{
 		Id:       u.Id,
 		Username: u.Username,
-		Phone:    user.Phone(u.Phone),
-		Email:    user.Email(u.Email),
+		Phone:    (*user.Phone)(u.Phone),
+		Email:    (*user.Email)(u.Email),
 	}
 }

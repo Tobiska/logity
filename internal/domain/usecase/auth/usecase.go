@@ -49,12 +49,7 @@ func (us Usecase) Me(ctx context.Context) (*dto.MeOutputDto, error) {
 		return nil, fmt.Errorf("error user doesn't contained context")
 	}
 
-	return &dto.MeOutputDto{
-		UserId: u.Id,
-		Email:  string(u.Email),
-		Phone:  string(u.Phone),
-		Fio:    u.Username,
-	}, nil
+	return dto.MeDtoFromDomain(u), nil
 }
 
 func (us Usecase) SignIn(ctx context.Context, d dto.SignInInputDto) (*dto.SignInOutputDto, error) {
@@ -125,8 +120,14 @@ func (us Usecase) UpdateAccessToken(ctx context.Context, in dto.UpdateTokenInput
 	return accessToken, nil
 }
 
-func (us Usecase) SignUp(ctx context.Context, d dto.SignUpInputDto) (*dto.SignUpOutputDto, error) {
-	u, err := us.authRepo.CreateUser(ctx, d)
+func (us Usecase) SignUpByEmail(ctx context.Context, d dto.SignUpByEmailInputDto) (*dto.SignUpOutputDto, error) {
+	cd := dto.CreateUserDto{
+		Email:    &d.Email,
+		Password: d.Password,
+		Fio:      d.Fio,
+	}
+
+	u, err := us.authRepo.CreateUser(ctx, cd)
 	if err != nil {
 		return nil, fmt.Errorf("error create auth: %w", err)
 	}
@@ -137,4 +138,8 @@ func (us Usecase) SignUp(ctx context.Context, d dto.SignUpInputDto) (*dto.SignUp
 	return &dto.SignUpOutputDto{
 		UserId: u.Id,
 	}, nil
+}
+
+func (us Usecase) SignUpByPhone(ctx context.Context, d dto.SignUpByEmailInputDto) (*dto.SignUpOutputDto, error) {
+	panic("implement SignUpByPhone")
 }

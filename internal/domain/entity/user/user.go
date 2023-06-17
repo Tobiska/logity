@@ -28,26 +28,32 @@ func NewPhone(s string) (Phone, error) {
 
 type User struct {
 	Id           string
-	Email        Email
-	Phone        Phone
+	Email        *Email
+	Phone        *Phone
 	Username     string
 	PasswordHash string
 }
 
-func NewUser(email, phone, fio string) (*User, error) {
-	pn, err := NewPhone(phone)
-	if err != nil {
-		return nil, err
-	}
-
-	m, err := NewEmail(email)
-	if err != nil {
-		return nil, err
-	}
-
-	return &User{
-		Email:    m,
-		Phone:    pn,
+func NewUser(email, phone *string, fio string) (*User, error) {
+	u := &User{
 		Username: fio,
-	}, nil
+	}
+
+	if phone != nil {
+		pn, err := NewPhone(*phone)
+		if err != nil {
+			return nil, err
+		}
+		u.Phone = &pn
+	}
+
+	if email != nil {
+		m, err := NewEmail(*email)
+		if err != nil {
+			return nil, err
+		}
+		u.Email = &m
+	}
+
+	return u, nil
 }

@@ -3,6 +3,8 @@ module logity
 go 1.19
 
 require (
+	github.com/centrifugal/centrifuge-go v0.9.6
+	github.com/centrifugal/gocent/v3 v3.2.0
 	github.com/doug-martin/goqu/v9 v9.18.0
 	github.com/go-chi/chi v1.5.4
 	github.com/go-ozzo/ozzo-validation v3.6.0+incompatible
@@ -16,8 +18,6 @@ require (
 require (
 	github.com/BurntSushi/toml v1.1.0 // indirect
 	github.com/asaskevich/govalidator v0.0.0-20230301143203-a9d515a09cc2 // indirect
-	github.com/centrifugal/centrifuge-go v0.9.6 // indirect
-	github.com/centrifugal/gocent/v3 v3.2.0 // indirect
 	github.com/centrifugal/protocol v0.10.0 // indirect
 	github.com/gorilla/websocket v1.5.0 // indirect
 	github.com/jackc/pgpassfile v1.0.0 // indirect

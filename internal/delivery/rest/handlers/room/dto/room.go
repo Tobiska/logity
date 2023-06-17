@@ -15,9 +15,9 @@ type RoomOutputDto struct {
 }
 
 type UserOutputDto struct {
-	Id    string `json:"id"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Id    string  `json:"id"`
+	Email *string `json:"email"`
+	Phone *string `json:"phone"`
 }
 
 func NewRoomOutputDto(r *room.Room) RoomOutputDto {
@@ -43,7 +43,7 @@ func NewRoomOutputDto(r *room.Room) RoomOutputDto {
 func NewUserOutputDto(u *user.User) UserOutputDto {
 	return UserOutputDto{
 		Id:    u.Id,
-		Email: string(u.Email),
-		Phone: string(u.Phone),
+		Email: (*string)(u.Email),
+		Phone: (*string)(u.Phone),
 	}
 }

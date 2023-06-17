@@ -74,7 +74,8 @@ func (r *Repository) FindUser(ctx context.Context, userId string) (*user.User, e
 	return u, nil
 }
 
-func (r *Repository) CreateUser(ctx context.Context, d dto.SignUpInputDto) (*user.User, error) {
+func (r *Repository) CreateUser(ctx context.Context, d dto.CreateUserDto) (*user.User, error) {
+
 	passwordHash, err := r.hashGenerator.Hash(ctx, d.Password)
 	if err != nil {
 		return nil, fmt.Errorf("password hash error: %w", err)

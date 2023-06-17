@@ -20,16 +20,16 @@ func NewRoomsDto(rs []*room.Room) RoomsUpdatedDto {
 }
 
 type UserDto struct {
-	Id    string `json:"id"`
-	Email string `json:"email"`
-	Phone string `json:"phone"`
+	Id    string  `json:"id"`
+	Email *string `json:"email"`
+	Phone *string `json:"phone"`
 }
 
 func NewUserDto(u *user.User) UserDto {
 	return UserDto{
 		Id:    u.Id,
-		Email: string(u.Email),
-		Phone: string(u.Phone),
+		Email: (*string)(u.Email),
+		Phone: (*string)(u.Phone),
 	}
 }
 
