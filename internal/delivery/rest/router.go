@@ -1,8 +1,12 @@
 package rest
 
 import (
+	"fmt"
 	"github.com/go-chi/chi"
 	"github.com/go-chi/chi/middleware"
+	httpSwagger "github.com/swaggo/http-swagger"
+	"logity/config"
+	"logity/docs"
 	"logity/internal/delivery/rest/handlers/auth"
 	"logity/internal/delivery/rest/handlers/log"
 	"logity/internal/delivery/rest/handlers/operating"
@@ -16,7 +20,21 @@ func NewRouter() chi.Router {
 	return r
 }
 
-func RegisterRouting(r chi.Router, env *usecase.Env) {
+func ConfigureSwagger(cfg *config.App) {
+	docs.SwaggerInfo.Title = "Logity"
+	docs.SwaggerInfo.Description = "rest api logity"
+	docs.SwaggerInfo.Version = "1.0"
+	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.Schemes = []string{"http", "https"}
+	docs.SwaggerInfo.Host = fmt.Sprintf("%s%s", cfg.Host, cfg.ApiPort)
+}
+
+// @securitydefinitions.apikey ApiKeyAuth
+// @in header
+// @name Authorization
+func RegisterRouting(r chi.Router, env *usecase.Env, cfg *config.App) {
+	ConfigureSwagger(cfg)
+	r.Mount("/swagger", httpSwagger.WrapHandler)
 
 	authHandler := auth.NewHandler(env.AuthUsecase, env.RoomUsecase)
 	roomHandler := room.NewHandler(env.RoomUsecase)

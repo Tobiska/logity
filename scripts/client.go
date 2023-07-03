@@ -8,7 +8,7 @@ import (
 
 func main() {
 	client := centrifuge.NewJsonClient("ws://localhost:8123/connection/websocket", centrifuge.Config{
-		Token: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjZW50cmlmdWdvIiwiZXhwIjoxNjg2NTE1ODk2LCJpc3MiOiJMT0dJVFkiLCJzdWIiOiIwNmU5NTFmMi04OTQzLTQ2YTgtYTA4Yi04ZTgxNTZhMjQzNDIifQ.4ceu8505pO4VZImLhnXnMyDl3w7EtwMt8nt04wB8FNE2dRVo98rn8MLrOmUYpAueLI6RwYQKMBFoHbLsv-d3GQ",
+		Token: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjZW50cmlmdWdvIiwiZXhwIjoxNjg4MTkxMTA0LCJpc3MiOiJMT0dJVFkiLCJzdWIiOiJlZmYzOGE5Yy1iZDM0LTQ0MTktYjNhMC1iYjNhZmMxNWM1NGQifQ.2zEQG5o3pI8hqlH0pM0JrFvny8g-KSV5uFwiKRQ2WyeOBcoSXaGlPcEjRQsmBGSVAsWoDVbvdmBKC0_QNh987g",
 	})
 
 	defer client.Close()

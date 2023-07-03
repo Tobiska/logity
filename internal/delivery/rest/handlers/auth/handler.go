@@ -24,6 +24,17 @@ func NewHandler(usecase *auth.Usecase, roomUsecase *room.Usecase) *Handler {
 	}
 }
 
+// @Summary signIn
+// @Tags auth
+// @Description should receive 3 tokens: refresh_token, access_token, rtc_token. Access to private methods is done using access_token
+// @ID sign-in
+// @Param input body SignIn true "credentials"
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.SignInOutputDto "should get 3 tokens"
+// @Failure 422 {string} string "invalid input parameter"
+// @Failure 400 {string} string "invalid request body or error request"
+// @Router /auth/sign-in [post]
 func (h *Handler) handleSignIn(w http.ResponseWriter, r *http.Request) {
 	signIn := &SignIn{}
 	if err := json.NewDecoder(r.Body).Decode(signIn); err != nil {
@@ -83,6 +94,17 @@ func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+// @Summary Me
+// @Security ApiKeyAuth
+// @Tags auth
+// @Description get me user information
+// @ID me
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.MeOutputDto "should get user"
+// @Failure 401 {string} string "unauth"
+// @Failure 500 {string} string "server error"
+// @Router /me [get]
 func (h *Handler) handleMe(w http.ResponseWriter, r *http.Request) {
 	out, err := h.authUsecase.Me(r.Context())
 	if err != nil {
@@ -103,6 +125,17 @@ func (h *Handler) handleMe(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// @Summary signUp
+// @Tags auth
+// @Description create user email and phone must be unique
+// @ID sign-up
+// @Param input body dto.SignUpByEmailInputDto true "credentials"
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.SignUpOutputDto "should get uuid"
+// @Failure 422 {string} string "invalid input parameter"
+// @Failure 400 {string} string "invalid request body or error request"
+// @Router /auth/sign-up [post]
 func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 	in := dto.SignUpByEmailInputDto{}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {
@@ -135,6 +168,17 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 	return
 }
 
+// @Summary updateAccessToken
+// @Tags auth
+// @Description create user email and phone must be unique
+// @ID update-access-token
+// @Param input body dto.UpdateTokenInputDto true "refresh_token"
+// @Accept json
+// @Produce json
+// @Success 200 {object} dto.JWT "should get access token"
+// @Failure 422 {string} string "invalid input parameter"
+// @Failure 400 {string} string "invalid request body or error request"
+// @Router /auth/refresh [patch]
 func (h *Handler) handleUpdateAccessToken(w http.ResponseWriter, r *http.Request) {
 	in := dto.UpdateTokenInputDto{}
 	if err := json.NewDecoder(r.Body).Decode(&in); err != nil {

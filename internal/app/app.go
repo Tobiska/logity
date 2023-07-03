@@ -66,7 +66,7 @@ func Run(cfg *config.Config) {
 	env := usecase.NewEnv(roomUc, authUc, operatingUc, logUc)
 
 	r := rest.NewRouter()
-	rest.RegisterRouting(r, env)
+	rest.RegisterRouting(r, env, &cfg.App)
 
 	if err := http.ListenAndServe(cfg.ApiPort, r); err != nil {
 		log.Fatalf("error http server %s", err)

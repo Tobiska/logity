@@ -30,7 +30,8 @@ type (
 	}
 
 	App struct {
-		Host    string `env:"HOST_NAME" env-default:"LOGITY"`
+		Host    string `env:"HOST" env-default:"localhost"`
+		Name    string `env:"APP_NAME" env-default:"LOGITY"`
 		ApiPort string `env:"API_PORT" env-default:":8080"`
 	}
 

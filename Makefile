@@ -7,6 +7,8 @@ migrate:
 rollback-count:
 	liquibase rollback-count --count=$(count) --url="$(DATABASE)" --changelog-file="migration/liquibase/changelog.xml"
 
+swag-gen:
+	swag init -g internal/delivery/rest/router.go
 
 rollback-tag:
 	liquibase rollback --tag=$(tag) --url="$(DATABASE)" --changelog-file="migration/liquibase/changelog.xml"

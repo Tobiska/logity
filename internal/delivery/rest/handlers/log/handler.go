@@ -20,6 +20,19 @@ func NewHandler(usecase *log.Usecase) *Handler {
 	}
 }
 
+// @Summary pushTextLog
+// @Tags log
+// @Security ApiKeyAuth
+// @Description push-text-log
+// @ID push-text-log
+// @Accept json
+// @Produce json
+// @Param input body input.LogTextInput true "log text and uuid rooms "
+// @Success 200 {string} string  "just status code"
+// @Failure 422 {string} string "invalid input parameter"
+// @Failure 401 {string} string "unauth"
+// @Failure 400 {string} string "invalid request body or error request"
+// @Router /log/push-text-log [post]
 func (h *Handler) handlePushTextLog(w http.ResponseWriter, r *http.Request) {
 	logInput := &input.LogTextInput{}
 	if err := json.NewDecoder(r.Body).Decode(logInput); err != nil {

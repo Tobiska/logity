@@ -22,7 +22,7 @@ func NewTokenManager(cfg *config.Config) *TokenManager {
 		secretAccessKey:         cfg.SecretAccessKey,
 		secretRefreshKey:        cfg.SecretRefreshKey,
 		secretRealTimeServerKey: cfg.Centrifugo.SecretKey,
-		issuer:                  cfg.App.Host,
+		issuer:                  cfg.App.Name,
 	}
 }
 

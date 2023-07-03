@@ -17,6 +17,16 @@ func NewHandler(usecase *operating.Usecase) *Handler {
 	}
 }
 
+// @Summary updateSubscribes
+// @Tags operating
+// @Security ApiKeyAuth
+// @Description when a user loses connection with centrifugo, subscriptions to all channels are automatically lost, in order to restore the subscription when the token expires or disconnects, this route is used
+// @ID update-subscribes
+// @Accept json
+// @Produce json
+// @Success 200 {string} string  "just status code"
+// @Failure 401 {string} string "unauth"
+// @Router /op/update-subscribes [patch]
 func (h *Handler) handleUpdatedSubscribes(w http.ResponseWriter, r *http.Request) {
 	if err := h.usecase.UpdateSubscribes(r.Context()); err != nil {
 		w.WriteHeader(400)
