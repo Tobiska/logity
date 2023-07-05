@@ -66,7 +66,6 @@ func (h *Handler) handleSignIn(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write(resp)
-	return
 }
 
 func (h *Handler) AuthMiddleware(next http.Handler) http.Handler {
@@ -122,7 +121,6 @@ func (h *Handler) handleMe(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write(resp)
-	return
 }
 
 // @Summary signUp
@@ -165,7 +163,6 @@ func (h *Handler) handleSignUp(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(201)
 	w.Write(resp)
-	return
 }
 
 // @Summary updateAccessToken
@@ -209,7 +206,6 @@ func (h *Handler) handleUpdateAccessToken(w http.ResponseWriter, r *http.Request
 
 	w.WriteHeader(201)
 	w.Write(resp)
-	return
 }
 
 func (h *Handler) handleResetPassword(w http.ResponseWriter, r *http.Request) {

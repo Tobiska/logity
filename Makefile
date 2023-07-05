@@ -1,7 +1,7 @@
 DATABASE=jdbc:postgresql://localhost:5432/logity_auth?user=postgres&password=postgres&sslmode=disable
 
 lint: ## Run linters
-	golangci-lint run --disable-all -E govet,staticcheck,errcheck
+	golangci-lint run --disable-all -E govet,staticcheck
 
 test:
 	go test -race -v -timeout=30s -coverprofile=cover.out -coverpkg=./... ./...

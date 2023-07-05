@@ -34,7 +34,6 @@ func (h *Handler) handleUpdatedSubscribes(w http.ResponseWriter, r *http.Request
 		return
 	}
 	w.WriteHeader(200)
-	return
 }
 func (h *Handler) Register(r chi.Router) {
 	r.Group(func(r chi.Router) {

@@ -40,6 +40,7 @@ func (h *Handler) handleCreateRoom(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(createRoom); err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte(fmt.Sprintf("request body error: %s", err)))
+		return
 	}
 	if err := createRoom.Validate(); err != nil {
 		w.WriteHeader(422)
@@ -67,7 +68,6 @@ func (h *Handler) handleCreateRoom(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(201)
 	w.Write(resp)
-	return
 }
 
 // @Summary inviteRoom
@@ -106,7 +106,6 @@ func (h *Handler) handleInviteRoom(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(200)
-	return
 }
 
 // @Summary showRooms
@@ -174,7 +173,6 @@ func (h *Handler) handleJoinRoom(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write(resp)
-	return
 }
 
 // @Summary showRoomById
@@ -210,7 +208,6 @@ func (h *Handler) handleShowRoom(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(200)
 	w.Write(resp)
-	return
 }
 
 func (h *Handler) Register(r chi.Router) {

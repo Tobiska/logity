@@ -11,7 +11,6 @@ var (
 )
 
 var emailRegex = regexp.MustCompile(`^[a-zA-Z0-9._%+\-]+@[a-z0-9.\-]+\.[a-z]{2,4}$`)
-var phoneRegex = regexp.MustCompile(`^((8|\+7)[\- ]?)?(\(?\d{3}\)?[\- ]?)?[\d\- ]{7,10}$`)
 
 // todo реализовать регистрацию через номер телефона
 type SignUpByEmailInputDto struct {

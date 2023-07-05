@@ -38,6 +38,7 @@ func (h *Handler) handlePushTextLog(w http.ResponseWriter, r *http.Request) {
 	if err := json.NewDecoder(r.Body).Decode(logInput); err != nil {
 		w.WriteHeader(400)
 		w.Write([]byte(fmt.Sprintf("request body error: %s", err)))
+		return
 	}
 	if err := logInput.Validate(); err != nil {
 		w.WriteHeader(422)
@@ -54,7 +55,6 @@ func (h *Handler) handlePushTextLog(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	w.WriteHeader(200)
-	return
 }
 func (h *Handler) Register(r chi.Router) {
 	r.Group(func(r chi.Router) {

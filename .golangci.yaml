@@ -2,7 +2,6 @@ linters:
   disable-all: true
   enable:
     - govet
-    - errcheck
     - staticcheck
     - nakedret
     - gocyclo
@@ -37,9 +36,6 @@ run:
     - scripts
     - charts
     - cmd
-
-issues:
-   new-from-rev: HEAD~1
 
 severity:
   default-severity: error

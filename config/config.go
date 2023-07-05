@@ -51,16 +51,16 @@ type (
 )
 
 var configInstance *Config
-var configErr error
+var errConfig error
 
 func ReadConfig() (*Config, error) {
 	if configInstance == nil {
 		var readConfigOnce sync.Once
 		readConfigOnce.Do(func() {
 			configInstance = &Config{}
-			configErr = cleanenv.ReadEnv(configInstance)
+			errConfig = cleanenv.ReadEnv(configInstance)
 		})
 	}
 
-	return configInstance, configErr
+	return configInstance, errConfig
 }
