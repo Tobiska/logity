@@ -1,1 +1,4 @@
 .idea
+exports/centrifugo/config.json
+dev.env
+local.env
