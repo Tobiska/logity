@@ -4,7 +4,7 @@
                    xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
                    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
     <changeSet id="user_schema" author="tobiska">
-        <neo4j:cypher>CREATE CONSTRAINT users IF NOT EXISTS FOR (u:User) REQUIRE (u.id, u.username, u.email, u.phone) IS NODE KEY</neo4j:cypher>
+        <neo4j:cypher>CREATE CONSTRAINT users IF NOT EXISTS FOR (u:User) REQUIRE (u.id, u.username) IS NODE KEY</neo4j:cypher>
         <rollback>DROP CONSTRAINT users</rollback>
     </changeSet>
     <changeSet id="user_id_unique" author="tobiska">

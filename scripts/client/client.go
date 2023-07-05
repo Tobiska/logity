@@ -6,9 +6,12 @@ import (
 	"log"
 )
 
+const Host = `"ws://localhost:8123/connection/websocket"`
+const Token = `<TOKEN>`
+
 func main() {
-	client := centrifuge.NewJsonClient("ws://localhost:8123/connection/websocket", centrifuge.Config{
-		Token: "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjZW50cmlmdWdvIiwiZXhwIjoxNjg4MTkxMTA0LCJpc3MiOiJMT0dJVFkiLCJzdWIiOiJlZmYzOGE5Yy1iZDM0LTQ0MTktYjNhMC1iYjNhZmMxNWM1NGQifQ.2zEQG5o3pI8hqlH0pM0JrFvny8g-KSV5uFwiKRQ2WyeOBcoSXaGlPcEjRQsmBGSVAsWoDVbvdmBKC0_QNh987g",
+	client := centrifuge.NewJsonClient(Host, centrifuge.Config{
+		Token: Token,
 	})
 
 	defer client.Close()

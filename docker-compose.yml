@@ -81,7 +81,7 @@ services:
     command: [
       "sh",
       "-c",
-      "liquibase update --url \"jdbc:neo4j:bolt://neo4j:7687?database=logity\" --username logity --password logitylogity --changeLogFile \"changelog/changelog.xml\""
+      "liquibase   --url \"jdbc:neo4j:bolt://neo4j:7687?database=logity\" --username logity --password logitylogity --changeLogFile \"changelog/changelog.xml\""
     ]
 
 volumes:

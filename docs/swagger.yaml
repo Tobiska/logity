@@ -1,0 +1,447 @@
+definitions:
+  auth.SignIn:
+    properties:
+      login:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.JWT:
+    properties:
+      expired_at:
+        type: string
+      token:
+        type: string
+    type: object
+  dto.MeOutputDto:
+    properties:
+      email:
+        type: string
+      fio:
+        type: string
+      phone:
+        type: string
+      user_id:
+        type: string
+    type: object
+  dto.SignInOutputDto:
+    properties:
+      access_token:
+        $ref: '#/definitions/dto.JWT'
+      refresh_token:
+        $ref: '#/definitions/dto.JWT'
+      rtc_host:
+        type: string
+      rtc_token:
+        $ref: '#/definitions/dto.JWT'
+    type: object
+  dto.SignUpByEmailInputDto:
+    properties:
+      confirm_password:
+        type: string
+      email:
+        type: string
+      fio:
+        type: string
+      password:
+        type: string
+    type: object
+  dto.SignUpOutputDto:
+    properties:
+      user_id:
+        type: string
+    type: object
+  dto.UpdateTokenInputDto:
+    properties:
+      refresh_token:
+        type: string
+    type: object
+  input.CreateRoom:
+    properties:
+      name:
+        type: string
+    type: object
+  input.InviteRoom:
+    properties:
+      room_id:
+        type: string
+      user_id:
+        type: string
+    type: object
+  input.LogTextInput:
+    properties:
+      room_ids:
+        items:
+          type: string
+        type: array
+      text:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /auth/refresh:
+    patch:
+      consumes:
+      - application/json
+      description: create user email and phone must be unique
+      operationId: update-access-token
+      parameters:
+      - description: refresh_token
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateTokenInputDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: should get access token
+          schema:
+            $ref: '#/definitions/dto.JWT'
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      summary: updateAccessToken
+      tags:
+      - auth
+  /auth/sign-in:
+    post:
+      consumes:
+      - application/json
+      description: 'should receive 3 tokens: refresh_token, access_token, rtc_token.
+        Access to private methods is done using access_token'
+      operationId: sign-in
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/auth.SignIn'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: should get 3 tokens
+          schema:
+            $ref: '#/definitions/dto.SignInOutputDto'
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      summary: signIn
+      tags:
+      - auth
+  /auth/sign-up:
+    post:
+      consumes:
+      - application/json
+      description: create user email and phone must be unique
+      operationId: sign-up
+      parameters:
+      - description: credentials
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.SignUpByEmailInputDto'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: should get uuid
+          schema:
+            $ref: '#/definitions/dto.SignUpOutputDto'
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      summary: signUp
+      tags:
+      - auth
+  /log/push-text-log:
+    post:
+      consumes:
+      - application/json
+      description: push-text-log
+      operationId: push-text-log
+      parameters:
+      - description: 'log text and uuid rooms '
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.LogTextInput'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: just status code
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: pushTextLog
+      tags:
+      - log
+  /me:
+    get:
+      consumes:
+      - application/json
+      description: get me user information
+      operationId: me
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: should get user
+          schema:
+            $ref: '#/definitions/dto.MeOutputDto'
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: Me
+      tags:
+      - auth
+  /op/update-subscribes:
+    patch:
+      consumes:
+      - application/json
+      description: when a user loses connection with centrifugo, subscriptions to
+        all channels are automatically lost, in order to restore the subscription
+        when the token expires or disconnects, this route is used
+      operationId: update-subscribes
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: just status code
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: updateSubscribes
+      tags:
+      - operating
+  /room/:
+    get:
+      consumes:
+      - application/json
+      description: show rooms
+      operationId: show-rooms
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: collection of rooms
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: showRooms
+      tags:
+      - room
+    post:
+      consumes:
+      - application/json
+      description: create room
+      operationId: create-room
+      parameters:
+      - description: room_name
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.CreateRoom'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: only status code
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+        "500":
+          description: server error
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: createRoom
+      tags:
+      - room
+  /room/{id}:
+    get:
+      consumes:
+      - application/json
+      description: show rooms
+      operationId: show-room-by-id
+      parameters:
+      - description: room uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: collection of rooms
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: showRoomById
+      tags:
+      - room
+    patch:
+      consumes:
+      - application/json
+      description: join room
+      operationId: join-room
+      parameters:
+      - description: room uuid
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: collection of rooms
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: joinRoom
+      tags:
+      - room
+  /room/invite:
+    patch:
+      consumes:
+      - application/json
+      description: invite user to room. User can only join by invitation
+      operationId: invite-room
+      parameters:
+      - description: user_id and room_id
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/input.InviteRoom'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: only status code
+          schema:
+            type: string
+        "400":
+          description: invalid request body or error request
+          schema:
+            type: string
+        "401":
+          description: unauth
+          schema:
+            type: string
+        "422":
+          description: invalid input parameter
+          schema:
+            type: string
+      security:
+      - ApiKeyAuth: []
+      summary: inviteRoom
+      tags:
+      - room
+securityDefinitions:
+  ApiKeyAuth:
+    in: header
+    name: Authorization
+    type: apiKey
+swagger: "2.0"
