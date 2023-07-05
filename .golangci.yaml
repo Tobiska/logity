@@ -39,7 +39,7 @@ run:
     - cmd
 
 issues:
-   new-from-rev: HEAD~2
+   new-from-rev: HEAD~1
 
 severity:
   default-severity: error
