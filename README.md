@@ -105,8 +105,6 @@ Backend service for minimalistic social network logity. A user in logity communi
 [![Postgres][Postgres]][Postgres-url]
 [![Neo4j][Neo4j]][Neo4j-url]
 
-
-
 <!-- GETTING STARTED -->
 ## Getting Started
 
@@ -131,15 +129,15 @@ Backend service for minimalistic social network logity. A user in logity communi
 
 ### Neo4j
 
-1. Run the docker-container with neo4j: ```sh docker-compose up neo4j --build```
+1. Run the docker-container with neo4j: ```docker-compose up neo4j --build```
 2. Go to http://localhost:7474/browser/.
-3. Authenticate with neo4j/testify. 
-4. In command line ```cypher CREATE DATABASE logity;``` and ```:use logity```
+3. Authenticate with **neo4j / testify**. 
+4. In command line ``` CREATE DATABASE logity;``` and ```:use logity```
 5. Create user with role **architect** using ```:server user add``` and check it using ```:server user list```
 
 ### Run
 
-1. Run the docker-containers: ```sh docker-compose up --build```
+1. Run the docker-containers: ```docker-compose up --build```
 2. Neo4j UI: http://localhost:7474/browser/.
 3. Centrifugo admin panel: http://localhost:9123/.
 4. If liquibase containers fail, try running them later. If successful, then postgres or neo4j did not have time to start to run.
