@@ -35,7 +35,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-    <a href="https://github.com/Tobiska/logity"><img width="100" height="20" src="https://i.ibb.co/sbg4PnV/babyblocks-1.png" alt="babyblocks-1" border="0"></a>
+    <a href="https://github.com/Tobiska/logity"><img width="400" height="60" src="assets/logo.svg" alt="logity" border="0"></a>
   <p align="center">
     <br />
 
