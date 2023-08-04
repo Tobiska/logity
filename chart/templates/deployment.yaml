@@ -1,0 +1,144 @@
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  labels:
+    app: {{ .Release.Name }}-{{ .Chart.Name }}
+
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-{{ .Chart.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-{{ .Chart.Name }}
+
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-{{ .Chart.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          ports:
+            - containerPort: {{ .Values.app.apiPort }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+
+          env:
+            - name: HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: HOST
+
+            - name: API_PORT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: API_PORT
+
+            - name: APP_NAME
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: APP_NAME
+
+            - name: ACCESS_TOKEN_TTL_IN_SEC
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: ACCESS_TOKEN_TTL_IN_SEC
+
+
+            - name: REFRESH_TOKEN_TTL_IN_SEC
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: REFRESH_TOKEN_TTL_IN_SEC
+
+            - name: POSTGRES_MAX_IDLE_CONN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: POSTGRES_MAX_IDLE_CONN
+
+
+
+            - name: POSTGRES_LIFETIME_CONN
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: POSTGRES_LIFETIME_CONN
+
+
+            - name: NEO4J_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: NEO4J_HOST
+
+
+            - name: NEO4J_DATABASE
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: NEO4J_DATABASE
+
+
+            - name: CENTRIFUGO_API_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: CENTRIFUGO_API_HOST
+
+
+            - name: CENTRIFUGO_CLIENT_HOST
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: CENTRIFUGO_CLIENT_HOST
+
+
+            - name: CENTRIFUGO_TOKEN_TTL_IN_SEC
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: CENTRIFUGO_TOKEN_TTL_IN_SEC
+
+
+            - name: POSTGRES_DSN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: POSTGRES_DSN
+
+            - name: SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: SECRET_ACCESS_KEY
+
+
+            - name: CENTRIFUGO_SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: CENTRIFUGO_SECRET_KEY
+
+            - name: CENTRIFUGO_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: CENTRIFUGO_API_KEY
+
+
+            - name: NEO4J_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: NEO4J_USERNAME
+
+...

@@ -1,0 +1,45 @@
+replicaCount: 4
+
+app:
+  host: "localhost"
+  name: "LOGITY"
+  apiPort: "8080"
+
+auth:
+  passwordHashCost: 5
+  secretAccessKey: ""
+  secretRefreshKey: ""
+  accessTokenTTLInSec: 350
+  refreshTokenTTLInSec: 3600
+
+database:
+  dsn: ""
+  maxIdleConn: 3
+  maxLifeTimeConn: 3
+
+neo4j:
+  host: ""
+  database: ""
+  username: ""
+  password: ""
+
+
+centrifugo:
+  apiHost: ""
+  clientHost: ""
+  apiKey: ""
+  secretKey: ""
+  tokenTTLInSec: 10
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 100Mi
+  limits:
+    cpu: 1
+    memory: 500Mi
+
+image:
+  repository: "nginx"
+  pullPolicy: "Always"
+  tag: "latest"
