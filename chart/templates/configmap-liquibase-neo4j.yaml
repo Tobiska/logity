@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-neo4j"
+  labels:
+    name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-neo4j"
+data:
+  # Liquibase changelog
+    {{- range $path, $_ :=  .Files.Glob  "files/liquibase/neo4j/**" }}
+    {{- base $path | nindent 2 }}: |-
+    {{- $.Files.Get $path | nindent 4 }}
+    {{ end }}

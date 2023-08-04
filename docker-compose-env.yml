@@ -1,0 +1,50 @@
+version: '3'
+
+services:
+  centrifugo:
+    container_name: centrifugo
+    image: centrifugo/centrifugo:v4
+    volumes:
+      - ./exports/centrifugo/config.json:/centrifugo/config.json
+    command: centrifugo -c config.json
+    ports:
+      - "8123:8000"
+      - "9123:9000"
+
+  postgres:
+    container_name: postgres
+    image: postgres:14-alpine
+    volumes:
+      - ./exports/postgres/data:/var/lib/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "6432:5432"
+    environment:
+      POSTGRES_DB: logity_auth
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+
+  neo4j:
+    container_name: neo4j
+    image: neo4j:5.8.0-enterprise
+    restart: unless-stopped
+    ports:
+      - "7474:7474"
+      - "7687:7687"
+    volumes:
+      - ./exports/neo4j/data:/data
+      - ./exports/neo4j/logs:/logs
+      - ./exports/neo4j/plugins:/plugins
+    environment:
+      # Raise memory limits
+      - NEO4J_AUTH=neo4j/testifyt
+      - NEO4J_ACCEPT_LICENSE_AGREEMENT=yes
+      - NEO4J_server.memory.pagecache.size=1G
+      - NEO4J_server.memory.heap.initial.size=1G
+      - NEO4J_server.memory.heap.max.size=1G
+
+volumes:
+  dbdata:
+    driver: local
+  neo4j:
+    driver: local

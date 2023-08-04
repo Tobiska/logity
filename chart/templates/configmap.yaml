@@ -1,32 +1,24 @@
 ---
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: {{ .Release.Name }}-{{ .Chart.Name }}
+  name: "{{ .Release.Name }}-{{ .Chart.Name }}"
   labels:
-     {{ .Release.Name }}-{{ .Chart.Name }}
-
+    app: "{{ .Release.Name }}-{{ .Chart.Name }}"
 data:
-  # App
-  HOST: {{ .Values.app.host | quote }}
-  APP_NAME: {{ .Values.app.apiPort | quote }}
-  API_PORT: {{ .Values.app.apiPort | quote }}
-
+  HOST: "{{ .Values.app.host }}"
+  APP_NAME: "{{ .Values.app.apiPort }}"
+  API_PORT: "{{ .Values.app.apiPort }}"
   # Auth
-  ACCESS_TOKEN_TTL_IN_SEC: {{ .Values.auth.accessTokenTTLInSec }}
-  REFRESH_TOKEN_TTL_IN_SEC: {{ .Values.auth.refreshTokenTTLInSec }}
-
+  ACCESS_TOKEN_TTL_IN_SEC: "{{ .Values.auth.accessTokenTTLInSec }}"
+  REFRESH_TOKEN_TTL_IN_SEC: "{{ .Values.auth.refreshTokenTTLInSec }}"
   # Database
-  POSTGRES_MAX_IDLE_CONN: {{ .Values.database.maxIdleConn }}
-  POSTGRES_LIFETIME_CONN: {{ .Values.database.maxLifeTimeConn }}
-
+  POSTGRES_MAX_IDLE_CONN: "{{ .Values.database.maxIdleConn }}"
+  POSTGRES_LIFETIME_CONN: "{{ .Values.database.maxLifeTimeConn }}"
   # Neo4j
-  NEO4J_HOST: {{ .Values.neo4j.host }}
-  NEO4J_DATABASE: {{ .Values.neo4j.database }}
-
+  NEO4J_HOST: "{{ .Values.neo4j.host }}"
+  NEO4J_DATABASE: "{{ .Values.neo4j.database }}"
   # Centrifugo
-  CENTRIFUGO_API_HOST: {{ .Values.centrifugo.apiHost }}
-  CENTRIFUGO_CLIENT_HOST: {{ .Values.centrifugo.clientHost }}
-  CENTRIFUGO_TOKEN_TTL_IN_SEC: {{ .Values.centrifugo.tokenTTLInSec }}
-...
+  CENTRIFUGO_API_HOST: "{{ .Values.centrifugo.apiHost }}"
+  CENTRIFUGO_CLIENT_HOST: "{{ .Values.centrifugo.clientHost }}"
+  CENTRIFUGO_TOKEN_TTL_IN_SEC: "{{ .Values.centrifugo.tokenTTLInSec }}"

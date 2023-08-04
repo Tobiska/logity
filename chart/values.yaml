@@ -6,30 +6,30 @@ app:
   apiPort: "8080"
 
 auth:
-  passwordHashCost: 5
-  secretAccessKey: ""
-  secretRefreshKey: ""
+  passwordHashCost: 7
+  secretAccessKey: "secret_key"
+  secretRefreshKey: "secret_key"
   accessTokenTTLInSec: 350
   refreshTokenTTLInSec: 3600
 
 database:
-  dsn: ""
+  dsn: "postgresql://host.minikube.internal:5432/logity_auth?user=postgres&password=postgres&sslmode=disable"
   maxIdleConn: 3
   maxLifeTimeConn: 3
 
 neo4j:
-  host: ""
-  database: ""
-  username: ""
-  password: ""
+  host: "neo4j://host.minikube.internal:7687"
+  database: "logity"
+  username: "logity"
+  password: "logitylogity"
 
 
 centrifugo:
-  apiHost: ""
-  clientHost: ""
-  apiKey: ""
-  secretKey: ""
-  tokenTTLInSec: 10
+  apiHost: "http://host.minikube.internal:9000/api"
+  clientHost: "ws://host.minikube.internal:8000/connection/websocket"
+  apiKey: "NdnY4YDJ"
+  secretKey: "4QH6JDhy"
+  tokenTTLInSec: 3600
 
 resources:
   requests:
@@ -39,7 +39,14 @@ resources:
     cpu: 1
     memory: 500Mi
 
+liquibase:
+  image: "liquibase/liquibase:latest"
+  pullPolicy: "Always"
+  changelogLocationPostgres: "/liquibase/postgres"
+  changelogLocationNeo4j: "/liquibase/neo4j"
+  liquibaseChangelogLocation: "/liquibase/changelog"
+
 image:
-  repository: "nginx"
+  repository: "tobiskadocker/logity"
   pullPolicy: "Always"
   tag: "latest"
