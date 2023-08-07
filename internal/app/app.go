@@ -68,7 +68,7 @@ func Run(cfg *config.Config) {
 	r := rest.NewRouter()
 	rest.RegisterRouting(r, env, &cfg.App)
 
-	if err := http.ListenAndServe(cfg.ApiPort, r); err != nil {
+	if err := http.ListenAndServe(fmt.Sprintf(":%d", cfg.ApiPort), r); err != nil {
 		log.Fatalf("error http server %s", err)
 	}
 }

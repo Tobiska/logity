@@ -157,6 +157,11 @@ spec:
                 secretKeyRef:
                   name: {{ .Release.Name }}-{{ .Chart.Name }}
                   key: NEO4J_USERNAME
+            - name: NEO4J_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-{{ .Chart.Name }}
+                  key: NEO4J_PASSWORD
       volumes:
         - name: *liquibaseChangelogPostgres
           configMap:

@@ -3,7 +3,7 @@ replicaCount: 4
 app:
   host: "localhost"
   name: "LOGITY"
-  apiPort: "8080"
+  apiPort: 8080
 
 auth:
   passwordHashCost: 7

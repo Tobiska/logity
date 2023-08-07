@@ -37,3 +37,15 @@ swag-gen:
 
 rollback-tag:
 	liquibase rollback --tag=$(tag) --url="$(DATABASE)" --changelog-file="migration/liquibase/changelog.xml"
+
+
+up-centrifugo:
+	helm repo add centrifugal https://centrifugal.github.io/helm-charts
+
+
+
+# Help
+
+#minikube  service hello-minikube1 --url
+
+#helm upgrade --install ingress-nginx ingress-nginx --repo https://kubernetes.github.io/ingress-nginx --namespace ingress-nginx --create-namespace
