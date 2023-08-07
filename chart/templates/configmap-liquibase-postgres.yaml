@@ -7,7 +7,7 @@ metadata:
     name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-postgres"
 data:
   # Liquibase changelog
-    {{- range $path, $_ :=  .Files.Glob  "files/liquibase/neo4j/**" }}
+    {{- range $path, $_ :=  .Files.Glob  "files/liquibase/postgres/**" }}
     {{- base $path | nindent 2 }}: |-
     {{- $.Files.Get $path | nindent 4 }}
     {{ end }}

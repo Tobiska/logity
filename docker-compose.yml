@@ -72,16 +72,14 @@ services:
 
   liquibase-neo4j:
     container_name: liquibase-neo4j
-    image: liquibase/liquibase:latest
-    depends_on:
-      - neo4j
+    image: tobiskadocker/liquibase-neo4j:latest
     volumes:
-      - ./exports/liquibase:/liquibase/lib
-      - ./migration/neo4j:/liquibase/changelog
+      - ./exports/liquibase/lib:/liquibase/lib
+      - ./migrations/liquibase/neo4j:/liquibase/changelog
     command: [
       "sh",
       "-c",
-      "liquibase   --url \"jdbc:neo4j:bolt://neo4j:7687?database=logity\" --username logity --password logitylogity --changeLogFile \"changelog/changelog.xml\""
+      "ls /liquibase/lib/ && liquibase update --url \"jdbc:neo4j:bolt://neo4j:7687?database=logity\" --username logity --password logitylogity --changeLogFile \"changelog/changelog.xml\""
     ]
 
 volumes:

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="room_node_key" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT room IF NOT EXISTS FOR (r:Room) REQUIRE (r.id, r.username, r.tag) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT room</rollback>
+    </changeSet>
+    <changeSet id="room_id_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT room_id IF NOT EXISTS FOR (r:Room) REQUIRE r.id IS UNIQUE</neo4j:cypher>
+        <rollback>DROP CONSTRAINT room_id</rollback>
+    </changeSet>
+</databaseChangeLog>

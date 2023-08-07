@@ -2,11 +2,18 @@ DATABASE=jdbc:postgresql://localhost:5432/logity_auth?user=postgres&password=pos
 APP_NAME=logity
 DOCKER_REPOSITORY=tobiskadocker
 
+LIQUIBASE_NEO4J_TAG=liquibase-neo4j
+
 upgrade:
 	helm upgrade $(APP_NAME) ./chart --install --atomic --timeout 3m
 
 local-environment-up:
 	docker-compose -f docker-compose-env.yml up --build -d
+
+neo4j-liquibase-build:
+	docker build -f exports/liquibase/Dockerfile -t $(LIQUIBASE_NEO4J_TAG) .
+	docker tag $(LIQUIBASE_NEO4J_TAG) $(DOCKER_REPOSITORY)/$(LIQUIBASE_NEO4J_TAG)
+	docker push $(DOCKER_REPOSITORY)/$(LIQUIBASE_NEO4J_TAG)
 
 docker-build:
 	docker build -f build/app/Dockerfile -t $(APP_NAME):latest .

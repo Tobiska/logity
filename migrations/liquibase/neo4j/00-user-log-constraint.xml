@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:neo4j="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+    <changeSet id="user_schema" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT users IF NOT EXISTS FOR (u:User) REQUIRE (u.id, u.username) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT users</rollback>
+    </changeSet>
+    <changeSet id="user_id_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT users_id_unique IF NOT EXISTS FOR (u:User) REQUIRE u.id IS UNIQUE</neo4j:cypher>
+        <rollback>DROP CONSTRAINT users_id_unique</rollback>
+    </changeSet>
+    <changeSet id="log_schema" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT logs IF NOT EXISTS FOR (l:Log) REQUIRE (l.id, l.type, l.created_at) IS NODE KEY</neo4j:cypher>
+        <rollback>DROP CONSTRAINT logs</rollback>
+    </changeSet>
+    <changeSet id="log_id_unique" author="tobiska">
+        <neo4j:cypher>CREATE CONSTRAINT logs_unique IF NOT EXISTS FOR (l:Log) REQUIRE l.id IS UNIQUE</neo4j:cypher>
+        <rollback>DROP CONSTRAINT logs_unique</rollback>
+    </changeSet>
+</databaseChangeLog>

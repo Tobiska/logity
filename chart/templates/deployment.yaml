@@ -24,34 +24,7 @@ spec:
           command:
             - sh
             - -c
-            - liquibase update --url="${JDBC_URL}" --changelog-file="changelog/changelog.xml"
-          env:
-            # Neo4j settings
-            - name: NEO4J_USERNAME
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}
-                  key: NEO4J_USERNAME
-            - name: NEO4J_PASSWORD
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}
-                  key: NEO4J_PASSWORD
-            - name: BOLT_URL
-              valueFrom:
-                secretKeyRef:
-                  name: {{ .Release.Name }}-{{ .Chart.Name }}
-                  key: BOLT_URL
-          volumeMounts:
-            - name: &liquibaseChangelogNeo4j liquibase-changelog-neo4j
-              mountPath: {{ .Values.liquibase.changelogLocationNeo4j | quote }}
-        - name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-neo4j"
-          image: {{ .Values.liquibase.image | quote }}
-          imagePullPolicy: {{ .Values.liquibase.pullPolicy | quote }}
-          command:
-            - sh
-            - -c
-            - liquibase update --url="${BOLT_URL}" --username "${NEO4J_USERNAME}" --password "${NEO4J_PASSWORD}" --changelog-file="changelog/changelog.xml"
+            - liquibase update --url="${JDBC_URL}" --changelog-file="/changelog/changelog.xml"
           env:
             # Postgres settings
             - name: JDBC_URL
@@ -185,9 +158,6 @@ spec:
                   name: {{ .Release.Name }}-{{ .Chart.Name }}
                   key: NEO4J_USERNAME
       volumes:
-        - name: *liquibaseChangelogNeo4j
-          configMap:
-            name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-neo4j"
         - name: *liquibaseChangelogPostgres
           configMap:
             name: "{{ .Release.Name }}-{{ .Chart.Name }}-liquibase-postgres"
