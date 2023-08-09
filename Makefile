@@ -41,7 +41,7 @@ rollback-tag:
 
 up-centrifugo:
 	helm repo add centrifugal https://centrifugal.github.io/helm-charts
-
+	helm upgrade --install centrifugo centrifugal/centrifugo --namespace centrifugal
 
 
 # Help

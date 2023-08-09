@@ -81,7 +81,7 @@ uniGrpcService:
   appProtocol: ""
 
 ingress:
-  enabled: false
+  enabled: true
 
   # Optionally set the ingressClassName. k8s >= 1.18
   ingressClassName: ""
@@ -89,13 +89,16 @@ ingress:
   # pathType override - see: https://kubernetes.io/docs/concepts/services-networking/ingress/#path-types
   pathType: Prefix
 
-  annotations: {}
+  annotations:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     #
     # To run on custom path:
-  # nginx.ingress.kubernetes.io/rewrite-target: /$2
-  hosts: []
+   nginx.ingress.kubernetes.io/rewrite-target: /
+  hosts:
+    - host: logity.centrifugo
+      paths:
+        - /
     # - host: centrifugo.local
     #   paths:
     #     - /
@@ -233,16 +236,39 @@ envSecret: []
 
 # Centrifugo configuration, will be transformed into config.json file.
 config:
+  admin: true
+  debug: true
+  health: true
+  client_user_connection_limit: 0
+  client_connection_limit: 0
+  client_concurrency: 1
+  client_stale_close_delay: "10s"
+  port: 8000
+  internal_port: 9000
+  allowed_origins:
+    - "*"
+  token_audience: "centrifugo"
+  token_issuer: "LOGITY"
+  namespaces:
+    - name: "room"
+      history_size: 10
+      history_ttl: "60s"
+      presence: true
+      join_leave: true
+      force_push_join_leave: true
+      allow_publish_for_client: true
+      allow_history_for_subscriber: true
+    - name: "rooms_user"
+    - name: "notifications"
+
+
+
   # Engine to use. Default memory engine allows running only one Centrifugo pod.
   # Scale to many pods with Redis engine or Nats broker. Refer to Centrifugo
   # documentation: https://centrifugal.github.io/centrifugo/server/engines/
   engine: "memory"
 
   # Enable admin web interface by default.
-  admin: true
-
-  # Array of namespaces.
-  namespaces: []
 
 
 # Init Containers, e.g. for waiting for other resources like redis  (evaluated as template)
@@ -254,16 +280,16 @@ initContainers: ""
 # Centrifugo secrets.
 secrets:
   # Secret key for HMAC tokens.
-  tokenHmacSecretKey: ""
+  tokenHmacSecretKey: "4QH6JDhy"
 
   # Admin password used to protect access to web interface.
-  adminPassword: ""
+  adminPassword: "admin"
 
   # Admin secret used to create auth tokens on user login into admin web interface.
-  adminSecret: ""
+  adminSecret: "admin"
 
   # Centrifugo api_key for Centrifugo API endpoint authorization.
-  apiKey: ""
+  apiKey: "NdnY4YDJ"
 
   # Centrifugo grpc_api_key for Centrifugo GRPC API authorization.
   grpcApiKey: ""

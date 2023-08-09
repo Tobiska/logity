@@ -8,10 +8,10 @@ metadata:
 spec:
   type: ClusterIP
   selector:
-    name: "{{ .Release.Name }}-{{ .Chart.Name }}"
+    app: "{{ .Release.Name }}-{{ .Chart.Name }}"
   ports:
     - name: http
-      port: {{ .Values.app.apiPort }}
+      port: {{ .Values.app.externalPort }}
       protocol: TCP
       targetPort: {{ .Values.app.apiPort }}
 
