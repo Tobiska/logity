@@ -7,7 +7,7 @@ metadata:
 
 spec:
   rules:
-    - host: app.example
+    - host: {{ .Values.app.host }}
       http:
         paths:
         - path: /

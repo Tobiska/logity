@@ -5,7 +5,7 @@ DOCKER_REPOSITORY=tobiskadocker
 LIQUIBASE_NEO4J_TAG=liquibase-neo4j
 
 upgrade:
-	helm upgrade $(APP_NAME) ./chart --install --atomic --timeout 3m
+	helm upgrade -f chart/values.yaml $(APP_NAME) ./chart --install --atomic --timeout 3m
 
 local-environment-up:
 	docker-compose -f docker-compose-env.yml up --build -d
@@ -39,10 +39,12 @@ rollback-tag:
 	liquibase rollback --tag=$(tag) --url="$(DATABASE)" --changelog-file="migration/liquibase/changelog.xml"
 
 
-up-centrifugo:
+upgrade-centrifugo:
 	helm repo add centrifugal https://centrifugal.github.io/helm-charts
-	helm upgrade --install centrifugo centrifugal/centrifugo --namespace centrifugal
+	helm upgrade --install centrifugo -f exports/centrifugo/values.yaml centrifugal/centrifugo --namespace default
 
+run-client:
+	go run scripts/client/client.go
 
 # Help
 

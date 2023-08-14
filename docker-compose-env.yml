@@ -1,15 +1,6 @@
 version: '3'
 
 services:
-  centrifugo:
-    container_name: centrifugo
-    image: centrifugo/centrifugo:v4
-    volumes:
-      - ./exports/centrifugo/config.json:/centrifugo/config.json
-    command: centrifugo -c config.json
-    ports:
-      - "8123:8000"
-      - "9123:9000"
 
   postgres:
     container_name: postgres

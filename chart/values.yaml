@@ -1,7 +1,7 @@
-replicaCount: 10
+replicaCount: 2
 
 app:
-  host: "localhost"
+  host: "logity-application"
   name: "LOGITY"
   apiPort: 8080
   externalPort: 80
@@ -27,8 +27,8 @@ neo4j:
 
 
 centrifugo:
-  apiHost: "http://host.minikube.internal:9123/api"
-  clientHost: "ws://host.minikube.internal:8123/connection/websocket"
+  apiHost: "http://centrifugo.default.svc.cluster.local:9000/api"
+  clientHost: "ws://centrifugo.default.svc.cluster.local:8000/connection/websocket"
   apiKey: "NdnY4YDJ"
   secretKey: "4QH6JDhy"
   tokenTTLInSec: 3600

@@ -96,7 +96,7 @@ ingress:
     # To run on custom path:
    nginx.ingress.kubernetes.io/rewrite-target: /
   hosts:
-    - host: logity.centrifugo
+    - host: logity-centrifugo
       paths:
         - /
     # - host: centrifugo.local
@@ -134,12 +134,10 @@ ingressInternal:
     #
     # To run on custom path:
   # nginx.ingress.kubernetes.io/rewrite-target: /$2
-  hosts: []
-    # - host: centrifugo.local
-    #   paths:
-    #     - /
-    # - host: centrifugo-with-prefix.local
-    #   paths:
+  hosts:
+     - host: logity.centrifugo
+       paths:
+         - /
   #     - /test(/|$)(.*)
   # https://kubernetes.github.io/ingress-nginx/examples/tls-termination/
   tls: []
