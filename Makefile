@@ -7,9 +7,6 @@ LIQUIBASE_NEO4J_TAG=liquibase-neo4j
 upgrade:
 	helm upgrade $(APP_NAME) ./chart --install --atomic --timeout 3m
 
-local-environment-up:
-	docker-compose -f docker-compose-env.yml up --build -d
-
 neo4j-liquibase-build:
 	docker build -f exports/liquibase/Dockerfile -t $(LIQUIBASE_NEO4J_TAG) .
 	docker tag $(LIQUIBASE_NEO4J_TAG) $(DOCKER_REPOSITORY)/$(LIQUIBASE_NEO4J_TAG)
@@ -39,11 +36,23 @@ rollback-tag:
 	liquibase rollback --tag=$(tag) --url="$(DATABASE)" --changelog-file="migration/liquibase/changelog.xml"
 
 
+
+# Environment
+
 up-centrifugo:
 	helm repo add centrifugal https://centrifugal.github.io/helm-charts
-	helm upgrade --install centrifugo centrifugal/centrifugo --namespace centrifugal
+	helm upgrade --install centrifugo centrifugal/centrifugo --namespace default
+
+up-prometheus:
+	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+	helm upgrade --install prometheus prometheus-community/prometheus --namespace monitoring --create-namespace --values exports/monitoring/prometheus/values.yaml
+	helm upgrade --install kube-prometheus --namespace=monitoring prometheus-community/kube-prometheus-stack --values exports/monitoring/prometheus/values.yaml
+
+local-environment-up:
+	docker-compose -f docker-compose-env.yml up --build -d
 
 
+# prometheus: monitoring
 # Help
 
 #minikube  service hello-minikube1 --url
