@@ -1,7 +1,7 @@
-replicaCount: 10
+replicaCount: 2
 
 app:
-  host: "localhost"
+  host: "logity-application"
   name: "LOGITY"
   apiPort: 8080
   externalPort: 80

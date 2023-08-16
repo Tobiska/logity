@@ -6,8 +6,8 @@ import (
 	"log"
 )
 
-const Host = `"ws://localhost:8123/connection/websocket"`
-const Token = `<TOKEN>`
+const Host = `ws://logity-centrifugo/connection/websocket`
+const Token = "eyJhbGciOiJIUzUxMiIsInR5cCI6IkpXVCJ9.eyJhdWQiOiJjZW50cmlmdWdvIiwiZXhwIjoxNjkyMDE4NTUxLCJpc3MiOiI4MDgwIiwic3ViIjoiN2ExMjFiMjUtOGY2My00ZjZkLWEzYjctMTJlNDkzNjcxMTQzIn0.vu0btsc6WSX4J0sU5riapaLkMqQzsJFhhnTWP0jaW5DdfozAOINfTSbrrNuxnIwC4c3zMvnW5hKC-vHQdLkasg"
 
 func main() {
 	client := centrifuge.NewJsonClient(Host, centrifuge.Config{
